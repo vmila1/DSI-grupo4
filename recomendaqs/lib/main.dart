@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recomendaqs/telas/tela_favoritos.dart';
+import 'package:recomendaqs/telas/tela_lidos.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TelaFavoritos(),
+      home: TelaLidos(),
     );
   }
 }
