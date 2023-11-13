@@ -10,12 +10,12 @@ class TelaPerfil extends StatefulWidget {
 
 class _TelaPerfilState extends State<TelaPerfil> {
   String senha = '';
+  String imagemUsuario = "assets/images/icone_perfil.jpg";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Perfil'),
-      ),
+      backgroundColor: Color(0xFF1E1E1E), // Cor de fundo desejada
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,14 +23,15 @@ class _TelaPerfilState extends State<TelaPerfil> {
             SizedBox(height: 20),
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/profile_image.jpg'),
+              backgroundImage: AssetImage(imagemUsuario),
             ),
             SizedBox(height: 10),
             Text(
-              'Nome do Usuário',
+              'Leon Lourenço',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: Colors.white, // Cor do texto branca
               ),
             ),
             SizedBox(height: 20),
@@ -39,6 +40,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             SizedBox(height: 10),
@@ -48,7 +50,15 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/favoritos');
                 },
-                child: Text('Favoritos'),
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFF1E1E1E),
+                  onPrimary: Colors.white,
+                  side: BorderSide(color: Colors.white),
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Favoritos'),
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -58,7 +68,15 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 onPressed: () {
                   // Adicione aqui a lógica para navegar para a tela de Preferências
                 },
-                child: Text('Preferências'),
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFF1E1E1E),
+                  onPrimary: Colors.white,
+                  side: BorderSide(color: Colors.white),
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Preferências'),
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -68,25 +86,34 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/lido');
                 },
-                child: Text('HQs Lidos'),
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFF1E1E1E),
+                  onPrimary: Colors.white,
+                  side: BorderSide(color: Colors.white),
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('HQs Lidos'),
+                ),
               ),
             ),
             SizedBox(height: 20),
-            // Espaço entre o botão "HQs Lidos" e o título "Configurações da Conta"
             Text(
               'Configurações da Conta',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
+              textAlign: TextAlign.left, // Alinhamento à esquerda
             ),
             SizedBox(height: 10),
-            // Título para alterar e-mail
             Text(
               'Alterar E-mail',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             // Caixa de texto para alterar e-mail
@@ -98,14 +125,15 @@ class _TelaPerfilState extends State<TelaPerfil> {
                     onChanged: (text) {
                       // Adicione aqui a lógica para lidar com a alteração do e-mail
                     },
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Alterar E-mail',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
+                        borderSide: BorderSide(color: Color(0xFF6F6F6F)),
                       ),
                       labelStyle: TextStyle(color: Colors.white),
-                      fillColor: Colors.white,
+                      fillColor: Color(0xFF6F6F6F),
                       filled: true,
                     ),
                   ),
@@ -113,12 +141,12 @@ class _TelaPerfilState extends State<TelaPerfil> {
               ),
             ),
             SizedBox(height: 10),
-            // Título para alterar senha
             Text(
               'Alterar Senha',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             // Caixa de texto para alterar senha
@@ -131,14 +159,15 @@ class _TelaPerfilState extends State<TelaPerfil> {
                       senha = text;
                     },
                     obscureText: true,
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Alterar Senha',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
+                        borderSide: BorderSide(color: Color(0xFF6F6F6F)),
                       ),
                       labelStyle: TextStyle(color: Colors.white),
-                      fillColor: Colors.white,
+                      fillColor: Color(0xFF6F6F6F),
                       filled: true,
                     ),
                   ),
@@ -146,12 +175,12 @@ class _TelaPerfilState extends State<TelaPerfil> {
               ),
             ),
             SizedBox(height: 10),
-            // Título para confirmar senha
             Text(
               'Confirmar Senha',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             // Caixa de texto para confirmar senha
@@ -161,14 +190,15 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 children: [
                   TextField(
                     obscureText: true,
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Confirmar Senha',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
+                        borderSide: BorderSide(color: Color(0xFF6F6F6F)),
                       ),
                       labelStyle: TextStyle(color: Colors.white),
-                      fillColor: Colors.white,
+                      fillColor: Color(0xFF6F6F6F),
                       filled: true,
                     ),
                   ),
@@ -176,7 +206,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
               ),
             ),
             SizedBox(height: 20),
-            // Botão "Sair" com cor vermelha
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: ElevatedButton(
@@ -184,7 +213,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                   Navigator.pushNamed(context, '/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red, // Cor vermelha
+                  primary: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -196,7 +225,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
               ),
             ),
             SizedBox(height: 20),
-            // Botões de navegação
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -230,8 +258,8 @@ class _TelaPerfilState extends State<TelaPerfil> {
               ],
             ),
             SizedBox(
-                height:
-                    20), // Espaçamento adicional entre os botões e a borda inferior
+              height: 20,
+            ),
           ],
         ),
       ),

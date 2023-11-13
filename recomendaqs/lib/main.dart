@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recomendaqs/telas/tela_favoritos.dart' as Favorito;
+import 'package:recomendaqs/telas/tela_favoritos.dart';
 import 'package:recomendaqs/telas/tela_lidos.dart';
 import 'package:recomendaqs/telas/tela_login.dart';
 import 'package:recomendaqs/telas/tela_cadastro.dart';
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         '/cadastro': (context) => CadastroPage(),
         '/inicial': (context) => HomePage(),
         '/perfil': (context) => TelaPerfil(),
-        '/favoritos': (context) => Favorito.FavoritoPage()
+        '/favoritos': (context) => FavoritoPage()
       },
     );
   }
