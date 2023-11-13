@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class TelaLidos extends StatefulWidget {
+class LidoPage extends StatefulWidget {
   @override
-  _TelaLidosState createState() => _TelaLidosState();
+  _LidoPageState createState() => _LidoPageState();
 }
 
-class _TelaLidosState extends State<TelaLidos> {
+class _LidoPageState extends State<LidoPage> {
   int totalImagens = 9;
 
   @override

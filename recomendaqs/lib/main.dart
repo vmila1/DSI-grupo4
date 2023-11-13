@@ -16,14 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/perfil',
+      initialRoute: '/login',
       routes: {
-        '/lido': (context) => TelaLidos(),
+        '/lido': (context) => LidoPage(),
         '/login': (context) => LoginPage(),
         '/cadastro': (context) => CadastroPage(),
         '/inicial': (context) => HomePage(),
         '/perfil': (context) => TelaPerfil(),
-        '/favoritos': (context) => Favorito.TelaFavoritos()
+        '/favoritos': (context) => Favorito.FavoritoPage()
       },
     );
   }

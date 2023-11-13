@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class TelaFavoritos extends StatefulWidget {
+class FavoritoPage extends StatefulWidget {
   @override
-  _TelaFavoritosState createState() => _TelaFavoritosState();
+  _FavoritoPageState createState() => _FavoritoPageState();
 }
 
-class _TelaFavoritosState extends State<TelaFavoritos> {
+class _FavoritoPageState extends State<FavoritoPage> {
   int totalImagens = 9;
 
   @override
