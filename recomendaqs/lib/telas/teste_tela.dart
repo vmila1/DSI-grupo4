@@ -1,0 +1,288 @@
+import 'package:flutter/material.dart';
+///import 'package:recomendaqs/telas/tela_buscar.dart';
+///import 'package:recomendaqs/telas/tela_perfil.dart';
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String nomeUsuario = "Leon Lourenço";
+  String imagemUsuario = "assets/images/icone_perfil.jpg";
+  int paginaAtual = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(86, 83, 255, 1),
+        title: Text('Olá, $nomeUsuario'),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundImage: AssetImage(imagemUsuario),
+              radius: 30,
+            ),
+          ),
+        ],
+      ),
+
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/images/telafundo.png',
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+          ),
+
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // Cabeçalho da lista de HQs Favoritas
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'HQs Favoritas:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+                
+                // Lista de HQs Favoritas
+                ListaHQsFavoritas(),
+
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Recomendações:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+                ListaRecomendacoes(),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Populares no momento:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+                ListaPopulares(),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Lançamentos:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+                ListaLancamentos(),
+              ],
+            ),
+          ),
+        ],
+      ),
+      
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Início',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Buscar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Perfil',
+          ),
+        ],
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.white,
+        currentIndex: paginaAtual,
+        onTap: _atualizarPagina,
+      ),
+    );
+  }
+
+  // Função para atualizar a página conforme a navegação
+  void _atualizarPagina(int index) {
+    setState(() {
+      paginaAtual = index;
+    });
+
+    // // Navegação para as páginas Buscar e Perfil
+    // if (index == 1) {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => TelaBuscar()),
+    //   );
+    // } else if (index == 2) {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => TelaPerfil()),
+    //   );
+    // }
+  }
+}
+
+class ListaHQsFavoritas extends StatelessWidget {
+  final List<String> hqsFavoritas = [
+    'assets/images/HQs/Fav/homem_aranha.jpg',
+    'assets/images/HQs/Fav/batman.jpg',
+    'assets/images/HQs/Fav/aranha_uniforme.jpg',
+    'assets/images/HQs/Fav/aranha_wolverine.jpg',
+    'assets/images/HQs/Fav/dr_manhatan.jpeg',
+    'assets/images/HQs/Fav/MulherMaravilha.jpg',
+    'assets/images/HQs/Fav/drman.jpg',
+    'assets/images/HQs/Fav/liga.jpeg',
+    'assets/images/HQs/Fav/batmanarm.jpg',
+    'assets/images/HQs/Fav/simpsons.jpg',
+    'assets/images/HQs/Fav/super.jpeg',
+    'assets/images/HQs/Fav/turma.jpg',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 195,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: hqsFavoritas.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
+              print("Imagem Favoritas ${index + 1} clicada!");
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                hqsFavoritas[index],
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: 115,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+class ListaRecomendacoes extends StatelessWidget {
+  final List<String> Recomendacoes = [
+    'assets/images/imagemhq.jpg',
+  ];
+  
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 195,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: Recomendacoes.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
+              print("Imagem Recomendações ${index + 1} clicada!");
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                Recomendacoes[index],
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: 115,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+class ListaPopulares extends StatelessWidget {
+  final List<String> Populares = [
+    "assets/images/HQs/Popu/drman.jpg",
+    "assets/images/HQs/Popu/liga.jpeg",
+    "assets/images/HQs/Popu/batmanarm.jpg",
+    "assets/images/HQs/Popu/dead.jpeg",
+  ];
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 195, // Altura da lista, ajuste conforme necessário
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: Populares.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
+              print("Imagem Populares ${index + 1} clicada!");
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                Populares[index],
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: 115,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+class ListaLancamentos extends StatelessWidget {
+  final List<String> Lancamentos = [
+  "assets/images/HQs/Lan/simpsons.jpg",
+  "assets/images/HQs/Lan/super.jpeg",
+  "assets/images/HQs/Lan/turma.jpg",
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 195, // Altura da lista, ajuste conforme necessário
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: Lancamentos.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
+              print("Imagem Lançamentos ${index + 1} clicada!");
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                Lancamentos[index],
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: 115,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

@@ -62,6 +62,27 @@ flutter:
   assets:
   - assets/images/telafundo.png
   - assets/images/imagemhq.jpg
+  - assets/images/icone_perfil.jpg
+  - assets/images/HQs/Fav/aranha_uniforme.jpg
+  - assets/images/HQs/Fav/aranha_wolverine.jpg
+  - assets/images/HQs/Fav/batman.jpg
+  - assets/images/HQs/Fav/batmanarm.jpg
+  - assets/images/HQs/Fav/dr_manhatan.jpeg
+  - assets/images/HQs/Fav/drman.jpg
+  - assets/images/HQs/Fav/homem_aranha.jpg
+  - assets/images/HQs/Fav/liga.jpeg
+  - assets/images/HQs/Fav/MulherMaravilha.jpg
+  - assets/images/HQs/Fav/simpsons.jpg
+  - assets/images/HQs/Fav/super.jpeg
+  - assets/images/HQs/Fav/turma.jpg
+  - assets/images/HQs/Lan/simpsons.jpg
+  - assets/images/HQs/Lan/super.jpeg
+  - assets/images/HQs/Lan/turma.jpg
+  - assets/images/HQs/Popu/batmanarm.jpg
+  - assets/images/HQs/Popu/dead.jpeg
+  - assets/images/HQs/Popu/drman.jpg
+  - assets/images/HQs/Popu/liga.jpeg
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

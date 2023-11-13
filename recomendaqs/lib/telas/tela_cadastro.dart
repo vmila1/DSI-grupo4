@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recomendaqs/lib/telas/tela_Cadastro.dart';
+import 'package:recomendaqs/telas/tela_Cadastro.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override

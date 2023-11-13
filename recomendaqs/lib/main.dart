@@ -3,6 +3,7 @@ import 'package:recomendaqs/telas/tela_favoritos.dart';
 import 'package:recomendaqs/telas/tela_lidos.dart';
 import 'package:recomendaqs/telas/tela_login.dart';
 import 'package:recomendaqs/telas/tela_cadastro.dart';
+import 'package:recomendaqs/telas/teste_tela.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         '/lido': (context) => TelaLidos(),
         '/login': (context) => LoginPage(),
         '/cadastro': (context) => CadastroPage(),
-        '/inicial': (context) => InicialPage(),
+        '/inicial': (context) => HomePage(),
       },
     );
   }
