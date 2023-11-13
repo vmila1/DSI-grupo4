@@ -113,20 +113,22 @@ class _HomePageState extends State<HomePage> {
       paginaAtual = index;
     });
 
-    // // Navegação para as páginas Buscar e Perfil
-    // if (index == 1) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => TelaBuscar()),
-    //   );
-    // } else if (index == 2) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => TelaPerfil()),
-    //   );
-    // }
+    switch (index) {
+      case 1:
+        // Tela de Busca (falta implementar essa aba)
+        // Navigator.pushNamed(context, '/buscar');
+        break;
+      case 2:
+        // Tela de Perfil
+        Navigator.pushNamed(context, '/perfil'); 
+        break;
+      default:
+        // Tela Inicial
+        break;
+    }
   }
 }
+
 
 class ListaHQsFavoritas extends StatelessWidget {
   final List<String> hqsFavoritas = [
