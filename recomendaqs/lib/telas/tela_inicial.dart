@@ -42,7 +42,6 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                // Cabeçalho da lista de HQs Favoritas
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
@@ -50,8 +49,6 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
-                
-                // Lista de HQs Favoritas
                 ListaHQsFavoritas(),
 
                 const Padding(
@@ -63,8 +60,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ListaRecomendacoes(),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Populares no momento:',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
@@ -72,8 +69,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ListaPopulares(),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Lançamentos:',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
@@ -157,7 +154,6 @@ class ListaHQsFavoritas extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
               print("Imagem Favoritas ${index + 1} clicada!");
             },
             child: Padding(
@@ -192,7 +188,6 @@ class ListaRecomendacoes extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
               print("Imagem Recomendações ${index + 1} clicada!");
             },
             child: Padding(
@@ -224,14 +219,13 @@ class ListaPopulares extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 195, // Altura da lista, ajuste conforme necessário
+      height: 195,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: Populares.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
               print("Imagem Populares ${index + 1} clicada!");
             },
             child: Padding(
@@ -261,14 +255,13 @@ class ListaLancamentos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 195, // Altura da lista, ajuste conforme necessário
+      height: 195,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: Lancamentos.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              // Implemente a ação desejada ao clicar na imagem (navegar para detalhes, por exemplo)
               print("Imagem Lançamentos ${index + 1} clicada!");
             },
             child: Padding(
