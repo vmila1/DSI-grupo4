@@ -3,7 +3,7 @@ import 'package:recomendaqs/telas/tela_favoritos.dart';
 import 'package:recomendaqs/telas/tela_lidos.dart';
 import 'package:recomendaqs/telas/tela_login.dart';
 import 'package:recomendaqs/telas/tela_cadastro.dart';
-import 'package:recomendaqs/telas/teste_tela.dart';
+import 'package:recomendaqs/telas/teste_inicial.dart';
 
 void main() {
   runApp(MyApp());
