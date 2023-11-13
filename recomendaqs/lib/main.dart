@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recomendaqs/telas/tela_favoritos.dart';
 import 'package:recomendaqs/telas/tela_lidos.dart';
+import 'package:recomendaqs/telas/tela_login.dart';
+import 'package:recomendaqs/telas/tela_cadastro.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,7 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TelaLidos(),
+      initialRoute: '/login',
+      routes: {
+        '/lido': (context) => TelaLidos(),
+        '/login': (context) => LoginPage(),
+        '/cadastro': (context) => CadastroPage(),
+        '/inicial': (context) => InicialPage(),
+      },
     );
   }
 }
