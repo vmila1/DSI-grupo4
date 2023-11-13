@@ -238,31 +238,3 @@ class _TelaPerfilState extends State<TelaPerfil> {
     );
   }
 }
-
-class TelaFavoritos extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Favoritos'),
-      ),
-      body: Center(
-        child: Text('Conteúdo da Tela de Favoritos'),
-      ),
-    );
-  }
-}
-
-class TelaHQLidos extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('HQs Lidos'),
-      ),
-      body: Center(
-        child: Text('Conteúdo da Tela de HQs Lidos'),
-      ),
-    );
-  }
-}
