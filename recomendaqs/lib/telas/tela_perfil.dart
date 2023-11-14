@@ -1,104 +1,112 @@
 import 'package:flutter/material.dart';
-import 'package:recomendaqs/telas/tela_lidos.dart';
-import 'package:recomendaqs/telas/tela_favoritos.dart';
-import 'package:recomendaqs/telas/tela_login.dart';
 
 class TelaPerfil extends StatefulWidget {
+  const TelaPerfil({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _TelaPerfilState createState() => _TelaPerfilState();
 }
 
 class _TelaPerfilState extends State<TelaPerfil> {
   String senha = '';
+  String nomeUsuario = "Leon Lourenço";
   String imagemUsuario = "assets/images/icone_perfil.jpg";
+  int paginaAtual = 2;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1E1E1E), // Cor de fundo desejada
+      backgroundColor: const Color(0xFF1E1E1E), // Cor de fundo
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage(imagemUsuario),
             ),
-            SizedBox(height: 10),
+
+            const SizedBox(height: 10),
             Text(
-              'Leon Lourenço',
-              style: TextStyle(
+              nomeUsuario,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Cor do texto branca
+                color: Colors.white, // Cor do texto
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+
+            const SizedBox(height: 20),
+            const Text(
               'Configurações de HQs',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontFamily: "Script",
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 10),
-            Container(
+
+            const SizedBox(height: 10),
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/favoritos');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF1E1E1E),
-                  onPrimary: Colors.white,
-                  side: BorderSide(color: Colors.white),
+                  foregroundColor: Colors.white, 
+                  backgroundColor: const Color(0xFF1E1E1E),
+                  side: const BorderSide(color: Colors.white),
                 ),
-                child: Align(
+                child: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Favoritos'),
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            Container(
+
+            const SizedBox(height: 10),
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Adicione aqui a lógica para navegar para a tela de Preferências
+                  // Falta a aba de preferências
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF1E1E1E),
-                  onPrimary: Colors.white,
-                  side: BorderSide(color: Colors.white),
+                  foregroundColor: Colors.white,
+                   backgroundColor: const Color(0xFF1E1E1E),
+                  side: const BorderSide(color: Colors.white),
                 ),
-                child: Align(
+                child: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Preferências'),
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            Container(
+
+            const SizedBox(height: 10),
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/lido');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF1E1E1E),
-                  onPrimary: Colors.white,
-                  side: BorderSide(color: Colors.white),
+                  foregroundColor: Colors.white, backgroundColor: const Color(0xFF1E1E1E),
+                  side: const BorderSide(color: Colors.white),
                 ),
-                child: Align(
+                child: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('HQs Lidos'),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+
+            const SizedBox(height: 20),
+            const Text(
               'Configurações da Conta',
               style: TextStyle(
                 fontSize: 18,
@@ -107,8 +115,9 @@ class _TelaPerfilState extends State<TelaPerfil> {
               ),
               textAlign: TextAlign.left, // Alinhamento à esquerda
             ),
-            SizedBox(height: 10),
-            Text(
+
+            const SizedBox(height: 10),
+            const Text(
               'Alterar E-mail',
               style: TextStyle(
                 fontSize: 18,
@@ -116,6 +125,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 color: Colors.white,
               ),
             ),
+
             // Caixa de texto para alterar e-mail
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -123,25 +133,26 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 children: [
                   TextField(
                     onChanged: (text) {
-                      // Adicione aqui a lógica para lidar com a alteração do e-mail
+                      // Falta a logica de alterar email
                     },
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Alterar E-mail',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Color(0xFF6F6F6F)),
+                        borderSide: const BorderSide(color: Color(0xFF6F6F6F)),
                       ),
-                      labelStyle: TextStyle(color: Colors.white),
-                      fillColor: Color(0xFF6F6F6F),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color(0xFF6F6F6F),
                       filled: true,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 10),
-            Text(
+
+            const SizedBox(height: 10),
+            const Text(
               'Alterar Senha',
               style: TextStyle(
                 fontSize: 18,
@@ -149,6 +160,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 color: Colors.white,
               ),
             ),
+
             // Caixa de texto para alterar senha
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -159,23 +171,24 @@ class _TelaPerfilState extends State<TelaPerfil> {
                       senha = text;
                     },
                     obscureText: true,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Alterar Senha',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Color(0xFF6F6F6F)),
+                        borderSide: const BorderSide(color: Color(0xFF6F6F6F)),
                       ),
-                      labelStyle: TextStyle(color: Colors.white),
-                      fillColor: Color(0xFF6F6F6F),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color(0xFF6F6F6F),
                       filled: true,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 10),
-            Text(
+
+            const SizedBox(height: 10),
+            const Text(
               'Confirmar Senha',
               style: TextStyle(
                 fontSize: 18,
@@ -183,6 +196,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 color: Colors.white,
               ),
             ),
+
             // Caixa de texto para confirmar senha
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -190,22 +204,23 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 children: [
                   TextField(
                     obscureText: true,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Confirmar Senha',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Color(0xFF6F6F6F)),
+                        borderSide: const BorderSide(color: Color(0xFF6F6F6F)),
                       ),
-                      labelStyle: TextStyle(color: Colors.white),
-                      fillColor: Color(0xFF6F6F6F),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color(0xFF6F6F6F),
                       filled: true,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: ElevatedButton(
@@ -213,56 +228,62 @@ class _TelaPerfilState extends State<TelaPerfil> {
                   Navigator.pushNamed(context, '/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red,
+                  backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(10.0),
                   child: Text('Sair'),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/inicial');
-                    },
-                    icon: Icon(Icons.home),
-                    label: Text('Início'),
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // Adicione aqui a lógica para navegar para a tela de Buscar
-                    },
-                    icon: Icon(Icons.search),
-                    label: Text('Buscar'),
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // Adicione aqui a lógica para navegar para a tela de Perfil
-                    },
-                    icon: Icon(Icons.person),
-                    label: Text('Perfil'),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Início',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Buscar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Perfil',
+          ),
+        ],
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.white,
+        currentIndex: paginaAtual,
+        onTap: _atualizarPagina,
+      ),
     );
+  }
+  // Função para atualizar a página conforme a navegação
+  void _atualizarPagina(int index) {
+    setState(() {
+      paginaAtual = index;
+    });
+
+    switch (index) {
+      case 1:
+        // Tela de Busca (falta implementar essa aba)
+        // Navigator.pushNamed(context, '/buscar');
+        break;
+      case 2:
+        // Tela de Perfil
+        Navigator.pushNamed(context, '/perfil'); 
+        break;
+      default:
+        // Tela Inicial
+        Navigator.pushNamed(context, '/inicial');
+        break;
+    }
   }
 }

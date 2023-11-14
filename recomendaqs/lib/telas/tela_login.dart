@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:recomendaqs/telas/tela_cadastro.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override
@@ -29,7 +28,10 @@ class WaveClipper extends CustomClipper<Path> {
 }
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 

@@ -1,9 +1,12 @@
+// ignore_for_file: avoid_print, non_constant_identifier_names
+
 import 'package:flutter/material.dart';
-///import 'package:recomendaqs/telas/tela_buscar.dart';
-///import 'package:recomendaqs/telas/tela_perfil.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
@@ -16,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(86, 83, 255, 1),
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: Text('Olá, $nomeUsuario'),
         actions: <Widget>[
           Padding(
@@ -124,6 +127,7 @@ class _HomePageState extends State<HomePage> {
         break;
       default:
         // Tela Inicial
+        Navigator.pushNamed(context, '/inicial');
         break;
     }
   }
@@ -220,7 +224,7 @@ class ListaPopulares extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 195,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -256,7 +260,7 @@ class ListaLancamentos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 195,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

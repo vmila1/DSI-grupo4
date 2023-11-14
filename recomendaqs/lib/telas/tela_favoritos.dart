@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class FavoritoPage extends StatefulWidget {
+  const FavoritoPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _FavoritoPageState createState() => _FavoritoPageState();
 }
 
@@ -12,8 +15,8 @@ class _FavoritoPageState extends State<FavoritoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(86, 83, 255, 1),
-        title: Text('HQs Favoritas'),
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        title: const Text('HQs Favoritas'),
       ),
       body: Stack(
         children: [
@@ -23,7 +26,7 @@ class _FavoritoPageState extends State<FavoritoPage> {
             height: double.infinity,
             width: double.infinity,
           ),
-          ImagensHQ(),
+          const ImagensHQ(),
         ],
       ),
     );
@@ -31,10 +34,12 @@ class _FavoritoPageState extends State<FavoritoPage> {
 }
 
 class ImagensHQ extends StatelessWidget {
+  const ImagensHQ({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 100 / 150,
       ),
