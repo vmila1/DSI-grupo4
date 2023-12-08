@@ -5,6 +5,7 @@ import 'package:recomendaqs/telas/tela_login.dart';
 import 'package:recomendaqs/telas/tela_cadastro.dart';
 import 'package:recomendaqs/telas/tela_inicial.dart';
 import 'package:recomendaqs/telas/tela_perfil.dart';
+import 'package:recomendaqs/telas/tela_hq.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
         '/cadastro': (context) => const CadastroPage(),
         '/inicial': (context) => const HomePage(),
         '/perfil': (context) => const TelaPerfil(),
-        '/favoritos': (context) => const FavoritoPage()
+        '/favoritos': (context) => const FavoritoPage(),
+        '/hq': (context) => const HqPage()
       },
     );
   }

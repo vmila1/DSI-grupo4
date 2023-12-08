@@ -34,28 +34,34 @@ class _FavoritoPageState extends State<FavoritoPage> {
 }
 
 class ImagensHQ extends StatelessWidget {
-  const ImagensHQ({super.key});
+  const ImagensHQ({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 100 / 150,
       ),
       itemCount: 9,
       padding: const EdgeInsets.all(10.0),
       itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Image.asset(
-            'assets/images/imagemhq.jpg',
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/hq');
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Image.asset(
+              'assets/images/imagemhq.jpg',
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+            ),
           ),
         );
       },
     );
   }
 }
+
