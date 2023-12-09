@@ -65,7 +65,7 @@ Isso iniciará o aplicativo no seu dispositivo ou emulador conectado.
 
 ### Observações
 - Certifique-se de ter um emulador Android ou iOS configurado, ou um dispositivo físico conectado via USB.
-- Caso não tenha um emulador e use o Windows, no canto direito inferior tem uma opção escrito "Windows(windows-x64), após clicar selecione a opção do Chrome e ajuste o tamanho da janela confome sua preferencia"
+- Caso não tenha um emulador e use o Windows, no canto direito inferior do VS code tem uma opção escrito "Windows(windows-x64), após clicar selecione a opção do Chrome e ajuste o tamanho da janela confome sua preferencia"
 - Lembre-se de verificar e instalar as atualizações necessárias para as dependências do Flutter e Dart conforme necessário.
 
 Pronto! Agora você está pronto para explorar e utilizar o aplicativo Recomendaqs em sua estação de trabalho.
