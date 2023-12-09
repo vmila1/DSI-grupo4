@@ -194,6 +194,9 @@ class ListaRecomendacoes extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
+              if (index == 0){
+                Navigator.pushNamed(context, '/hq');
+              }
               print("Imagem Recomendações ${index + 1} clicada!");
             },
             child: Padding(

@@ -5,6 +5,7 @@ class HqPage extends StatefulWidget {
   const HqPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HqPageState createState() => _HqPageState();
 }
 
@@ -16,12 +17,12 @@ class _HqPageState extends State<HqPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(86, 83, 255, 1),
-        title: Text('Gênero | Nome | Produtora'),
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        title: const Text('Gênero | Nome | Produtora'),
       ),
       body: Stack(
         children: [
-          Container(
+          SizedBox(
             height: double.infinity,
             width: double.infinity,
             child: Image.asset(
@@ -38,17 +39,17 @@ class _HqPageState extends State<HqPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Text(
-                      '$nomeQuadrinho',
+                      nomeQuadrinho,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 24,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Image.asset(
                       'assets/images/imagemhq.jpg',
                       height: 300,
