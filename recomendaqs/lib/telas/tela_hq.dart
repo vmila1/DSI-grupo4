@@ -18,7 +18,7 @@ class _HqPageState extends State<HqPage> {
   String preco = "0.0";
   String avaliacao = "0.0";
   String resumo =
-      "RESUMO: “A estrela. O ícone. A bruxa. O Construto. O Deus. O engenheiro. O rei. O mundo está sempre em perigo, e uma nova equipe de Vingadores se mobiliza para enfrentar quaisquer perigos que ousem ameaçar o planeta. Mas quando Terminus ataca, um novo e insidioso perigo surge: um que os Vingadores conhecem muito bem e que vem a eles na mais perigosa das formas – a de um amigo.“";
+      "“A estrela. O ícone. A bruxa. O Construto. O Deus. O engenheiro. O rei. O mundo está sempre em perigo, e uma nova equipe de Vingadores se mobiliza para enfrentar quaisquer perigos que ousem ameaçar o planeta. Mas quando Terminus ataca, um novo e insidioso perigo surge: um que os Vingadores conhecem muito bem e que vem a eles na mais perigosa das formas – a de um amigo.“";
 
   TextEditingController _textEditingController = TextEditingController();
 
@@ -33,7 +33,7 @@ class _HqPageState extends State<HqPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(86, 83, 255, 1),
-        title: Text('Gênero | Nome | Produtora'),
+        title: Text('$generoQuadrinho '' | ''$nomePersonagem' ' | ' '$produtoraQuadrinho'),
       ),
       body: Stack(
         children: [
