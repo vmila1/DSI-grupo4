@@ -6,8 +6,14 @@ import 'package:recomendaqs/telas/tela_cadastro.dart';
 import 'package:recomendaqs/telas/tela_inicial.dart';
 import 'package:recomendaqs/telas/tela_perfil.dart';
 import 'package:recomendaqs/telas/tela_hq.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
