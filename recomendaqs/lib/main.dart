@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         '/perfil': (context) => const TelaPerfil(),
         '/favoritos': (context) => const FavoritoPage(),
         '/hq': (context) => const HqPage(),
-        'pesquisa': (context) => const TelaPesquisa()
+        '/pesquisa': (context) => const TelaPesquisa()
       },
     );
   }

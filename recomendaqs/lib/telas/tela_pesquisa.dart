@@ -159,5 +159,20 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
         Navigator.pushNamed(context, '/perfil');
       }
     });
+        switch (index) {
+      case 1:
+        // Tela de Busca
+        Navigator.pushNamed(context, '/pesquisa');
+        break;
+      case 2:
+        // Tela de Perfil
+        Navigator.pushNamed(context, '/perfil');
+        break;
+      default:
+        // Tela Inicial
+        Navigator.pushNamed(context, '/inicial');
+        break;
+    }
   }
 }
+
