@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override
@@ -28,16 +29,38 @@ class WaveClipper extends CustomClipper<Path> {
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String email = '';
-  String senha = '';
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController senhaController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  Future<void> _realizarLogin() async {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: senhaController.text,
+      );
+
+      // Login bem-sucedido, redirecione para a página desejada
+      Navigator.pushNamed(context, '/inicial');
+    } catch (e) {
+      // Trate qualquer exceção que possa ocorrer durante o login
+      print('Erro durante o login: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Falha no login. Verifique suas credenciais.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,92 +86,98 @@ class _LoginPageState extends State<LoginPage> {
           // Conteúdo na parte inferior
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text(
-                  'Bem vindo(a)',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  onChanged: (text) {
-                    email = text;
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(color: Colors.grey),
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text(
+                    'Bem vindo(a)',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                    labelStyle:
-                        const TextStyle(color: Color.fromARGB(255, 95, 95, 95)),
-                    fillColor: Colors.white,
-                    filled: true,
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    senha = text;
-                  },
-                  obscureText: true,
-                  style: const TextStyle(color: Colors.grey),
-                  decoration: InputDecoration(
-                    labelText: 'Senha',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    labelStyle:
-                        const TextStyle(color: Color.fromARGB(255, 95, 95, 95)),
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/inicial');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5653FF),
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  ),
-                  child: const Text(
-                    'Entrar',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/cadastro');
-                  },
-                  child: RichText(
-                    text: const TextSpan(
-                      text: 'Não é cadastrado? ',
-                      style: TextStyle(
-                        color: Colors.white,
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                      children: [
-                        TextSpan(
-                          text: 'Clique aqui',
-                          style: TextStyle(
-                            color: Color(0xFF90FF02),
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
+                      labelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 95, 95, 95)),
+                      fillColor: Colors.white,
+                      filled: true,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: senhaController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Senha',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      labelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 95, 95, 95)),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // Realize as ações de login aqui
+                        _realizarLogin();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Por favor, corrija os campos destacados.'),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5653FF),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                    child: const Text(
+                      'Entrar',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/cadastro');
+                    },
+                    child: RichText(
+                      text: const TextSpan(
+                        text: 'Não é cadastrado? ',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Clique aqui',
+                            style: TextStyle(
+                              color: Color(0xFF90FF02),
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

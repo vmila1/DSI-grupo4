@@ -57,7 +57,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                   Navigator.pushNamed(context, '/favoritos');
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, 
+                  foregroundColor: Colors.white,
                   backgroundColor: const Color(0xFF1E1E1E),
                   side: const BorderSide(color: Colors.white),
                 ),
@@ -77,7 +77,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                   backgroundColor: const Color(0xFF1E1E1E),
+                  backgroundColor: const Color(0xFF1E1E1E),
                   side: const BorderSide(color: Colors.white),
                 ),
                 child: const Align(
@@ -95,7 +95,8 @@ class _TelaPerfilState extends State<TelaPerfil> {
                   Navigator.pushNamed(context, '/lido');
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: const Color(0xFF1E1E1E),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF1E1E1E),
                   side: const BorderSide(color: Colors.white),
                 ),
                 child: const Align(
@@ -265,6 +266,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
       ),
     );
   }
+
   // Função para atualizar a página conforme a navegação
   void _atualizarPagina(int index) {
     setState(() {
@@ -274,11 +276,11 @@ class _TelaPerfilState extends State<TelaPerfil> {
     switch (index) {
       case 1:
         // Tela de Busca (falta implementar essa aba)
-        // Navigator.pushNamed(context, '/buscar');
+        Navigator.pushNamed(context, '/pesquisa');
         break;
       case 2:
         // Tela de Perfil
-        Navigator.pushNamed(context, '/perfil'); 
+        Navigator.pushNamed(context, '/perfil');
         break;
       default:
         // Tela Inicial

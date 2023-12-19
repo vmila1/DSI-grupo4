@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override
@@ -28,18 +29,87 @@ class WaveClipper extends CustomClipper<Path> {
 }
 
 class CadastroPage extends StatefulWidget {
-  const CadastroPage({super.key});
+  const CadastroPage({Key? key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _CadastroPageState createState() => _CadastroPageState();
 }
 
 class _CadastroPageState extends State<CadastroPage> {
-  String email = '';
-  String senha = '';
-  String username = '';
-  String confirmSenha = '';
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController senhaController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController confirmSenhaController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  String? _validateUsername(String value) {
+    if (value.isEmpty) {
+      return 'Digite um nome de usuário válido';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String value) {
+    if (value.isEmpty) {
+      return 'Digite um e-mail válido';
+    }
+
+    if (!value.contains('@')) {
+      return 'O e-mail deve conter @';
+    }
+
+    if (value.length < 5) {
+      return 'O e-mail deve ter pelo menos 5 caracteres';
+    }
+
+    return null;
+  }
+
+  String? _validateSenha(String value) {
+    if (value.isEmpty) {
+      return 'Digite uma senha válida';
+    }
+
+    if (value.length < 6) {
+      return 'A senha deve ter pelo menos 6 caracteres';
+    }
+
+    return null;
+  }
+
+  String? _validateConfirmSenha(String value) {
+    if (value != senhaController.text) {
+      return 'As senhas não coincidem';
+    }
+    return null;
+  }
+
+  Future<void> _cadastrarUsuario() async {
+    try {
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: senhaController.text,
+      );
+
+      await userCredential.user!.updateDisplayName(usernameController.text);
+
+      Navigator.pushNamed(context, '/inicial');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "email-already-in-use") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('O e-mail já está cadastrado.'),
+          ),
+        );
+        print("O usuário já está cadastrado");
+      } else {
+        print("Erro ao cadastrar usuário: ${e.message}");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,87 +132,96 @@ class _CadastroPageState extends State<CadastroPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text(
-                  'Cadastro',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _buildTextField(
-                  labelText: 'Nome de Usuário',
-                  onChanged: (text) {
-                    username = text;
-                  },
-                ),
-                const SizedBox(height: 10),
-                _buildTextField(
-                  labelText: 'Email',
-                  onChanged: (text) {
-                    email = text;
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 10),
-                _buildTextField(
-                  labelText: 'Senha',
-                  onChanged: (text) {
-                    senha = text;
-                  },
-                  obscureText: true,
-                ),
-                const SizedBox(height: 10),
-                _buildTextField(
-                  labelText: 'Confirme sua Senha',
-                  onChanged: (text) {
-                    confirmSenha = text;
-                  },
-                  obscureText: true,
-                ),
-                const SizedBox(height: 15),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/inicial');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5653FF),
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  ),
-                  child: const Text(
-                    'Cadastrar',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                  child: RichText(
-                    text: const TextSpan(
-                      text: 'Já tem uma conta? ',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: 'Clique aqui',
-                          style: TextStyle(
-                            color: Color(0xFF90FF02),
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text(
+                    'Cadastro',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    labelText: 'Nome de Usuário',
+                    controller: usernameController,
+                    validator: (value) => _validateUsername(value!),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    labelText: 'Email',
+                    controller: emailController,
+                    validator: (value) => _validateEmail(value!),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    labelText: 'Senha',
+                    controller: senhaController,
+                    validator: (value) => _validateSenha(value!),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    labelText: 'Confirme sua Senha',
+                    controller: confirmSenhaController,
+                    validator: (value) => _validateConfirmSenha(value!),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 15),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await _cadastrarUsuario();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Por favor, corrija os campos destacados.',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5653FF),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                    child: const Text(
+                      'Cadastrar',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    child: RichText(
+                      text: const TextSpan(
+                        text: 'Já tem uma conta? ',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Clique aqui',
+                            style: TextStyle(
+                              color: Color(0xFF90FF02),
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -152,12 +231,14 @@ class _CadastroPageState extends State<CadastroPage> {
 
   Widget _buildTextField({
     required String labelText,
-    required void Function(String) onChanged,
+    required TextEditingController controller,
+    required String? Function(String?) validator,
     bool obscureText = false,
     TextInputType? keyboardType,
   }) {
-    return TextField(
-      onChanged: onChanged,
+    return TextFormField(
+      controller: controller,
+      validator: validator,
       obscureText: obscureText,
       keyboardType: keyboardType,
       style: const TextStyle(color: Colors.grey),

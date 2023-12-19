@@ -7,6 +7,7 @@ import 'package:recomendaqs/telas/tela_inicial.dart';
 import 'package:recomendaqs/telas/tela_perfil.dart';
 import 'package:recomendaqs/telas/tela_hq.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:recomendaqs/telas/tela_pesquisa.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/login',
+      initialRoute: '/lido',
       routes: {
         '/lido': (context) => const LidoPage(),
         '/login': (context) => const LoginPage(),
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
         '/inicial': (context) => const HomePage(),
         '/perfil': (context) => const TelaPerfil(),
         '/favoritos': (context) => const FavoritoPage(),
-        '/hq': (context) => const HqPage()
+        '/hq': (context) => const HqPage(),
+        'pesquisa': (context) => const TelaPesquisa()
       },
     );
   }
