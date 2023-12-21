@@ -1,22 +1,25 @@
-// ignore_for_file: avoid_print, non_constant_identifier_names
-
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Map<String, dynamic>? args;
+  HomePage({Key? key, this.args}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String nomeUsuario = "Leon Lourenço";
+  String nomeUsuario = "leon";
   String imagemUsuario = "assets/images/icone_perfil.jpg";
   int paginaAtual = 0;
 
   @override
   Widget build(BuildContext context) {
+    String nomeUsuario = widget.args?['username'] ??
+        "leon"; // Usando dados do argumento ou valor padrão
+    String imagemUsuario = widget.args?['imagem'] ??
+        "assets/images/icone_perfil.jpg"; // Usando dados do argumento ou valor padrão
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
@@ -116,7 +119,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Função para atualizar a página conforme a navegação
   void _atualizarPagina(int index) {
     setState(() {
       paginaAtual = index;
@@ -124,16 +126,13 @@ class _HomePageState extends State<HomePage> {
 
     switch (index) {
       case 1:
-        // Tela de Busca
         Navigator.pushNamed(context, '/pesquisa');
         break;
       case 2:
-        // Tela de Perfil
         Navigator.pushNamed(context, '/perfil');
         break;
       default:
-        // Tela Inicial
-        Navigator.pushNamed(context, '/inicial');
+        // Se voltar para a tela inicial, não navegue, pois já estamos nela
         break;
     }
   }

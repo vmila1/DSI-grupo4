@@ -42,15 +42,23 @@ class _LoginPageState extends State<LoginPage> {
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  String? nomeUsuario;
+
   Future<void> _realizarLogin() async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
         email: emailController.text,
         password: senhaController.text,
       );
 
+      setState(() {
+        nomeUsuario = userCredential.user?.displayName;
+      });
+
       // Login bem-sucedido, redirecione para a página desejada
-      Navigator.pushNamed(context, '/inicial');
+      Navigator.pushReplacementNamed(context, '/inicial',
+          arguments: {'username': nomeUsuario});
     } catch (e) {
       // Trate qualquer exceção que possa ocorrer durante o login
       print('Erro durante o login: $e');

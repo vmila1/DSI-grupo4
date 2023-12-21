@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TelaPerfil extends StatefulWidget {
@@ -10,9 +11,32 @@ class TelaPerfil extends StatefulWidget {
 
 class _TelaPerfilState extends State<TelaPerfil> {
   String senha = '';
-  String nomeUsuario = "Leon Lourenço";
+  String? nomeUsuario = "";
   String imagemUsuario = "assets/images/icone_perfil.jpg";
   int paginaAtual = 2;
+
+  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarDadosUsuario();
+  }
+
+  // Função para carregar os dados do usuário
+  Future<void> _carregarDadosUsuario() async {
+    try {
+      User? user = _firebaseAuth.currentUser;
+
+      if (user != null) {
+        setState(() {
+          nomeUsuario = user.displayName;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +54,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
 
             const SizedBox(height: 10),
             Text(
-              nomeUsuario,
+              nomeUsuario ?? 'Nome não definido',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

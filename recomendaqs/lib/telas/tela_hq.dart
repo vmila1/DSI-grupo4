@@ -126,61 +126,61 @@ class _HqPageState extends State<HqPage> {
                 ),
                 SizedBox(height: 20),
                 Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        favorito = !favorito;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 216, 216, 216),
-                      onPrimary: Colors.red, 
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          favorito = !favorito;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(255, 216, 216, 216),
+                        onPrimary: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      icon: Icon(
+                        favorito ? Icons.favorite : Icons.favorite_border,
+                        size: 24,
+                      ),
+                      label: Text(
+                        favorito ? 'Favoritado' : 'Favoritar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color.fromARGB(255, 65, 64, 64),
+                        ),
                       ),
                     ),
-                    icon: Icon(
-                      favorito ? Icons.favorite : Icons.favorite_border,
-                      size: 24,
-                    ),
-                    label: Text(
-                      favorito ? 'Favoritado' : 'Favoritar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: const Color.fromARGB(255, 65, 64, 64),
+                    SizedBox(width: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          lido = !lido;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(255, 216, 216, 216),
+                        onPrimary: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      icon: Icon(
+                        lido ? Icons.bookmark : Icons.bookmark_outline,
+                        size: 24,
+                      ),
+                      label: Text(
+                        lido ? 'Lido' : 'Marcar como lido',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color.fromARGB(255, 65, 64, 64),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 20),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        lido = !lido;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 216, 216, 216), 
-                      onPrimary: Colors.blue, 
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    icon: Icon(
-                      lido ? Icons.bookmark : Icons.bookmark_outline,
-                      size: 24,
-                    ),
-                    label: Text(
-                      lido ? 'Lido' : 'Marcar como lido',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: const Color.fromARGB(255, 65, 64, 64),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
                 SizedBox(height: 15),
                 Text(
                   'Resumo:',
@@ -202,24 +202,24 @@ class _HqPageState extends State<HqPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-                    _itemChats(
-                      avatar: 'assets/images/avatar.jpg',
-                      name: 'João',
-                      chat: 'Quadrinho toppp demais',
-                      time: '15:30',
-                    ),
-                    _itemChats(
-                      avatar: 'assets/images/avatar.jpg',
-                      name: 'Maria',
-                      chat: 'Achei uma bosta',
-                      time: '15:32',
-                    ),
-                    _itemChats(
-                      avatar: 'assets/images/avatar.jpg',
-                      name: 'Pedro',
-                      chat: 'Gostei! massa.',
-                      time: '15:32',
-                    ),
+                _itemChats(
+                  avatar: 'assets/images/avatar.jpg',
+                  name: 'João',
+                  chat: 'Quadrinho toppp demais',
+                  time: '15:30',
+                ),
+                _itemChats(
+                  avatar: 'assets/images/avatar.jpg',
+                  name: 'Maria',
+                  chat: 'Achei uma bosta',
+                  time: '15:32',
+                ),
+                _itemChats(
+                  avatar: 'assets/images/avatar.jpg',
+                  name: 'Pedro',
+                  chat: 'Gostei! massa.',
+                  time: '15:32',
+                ),
                 SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20),

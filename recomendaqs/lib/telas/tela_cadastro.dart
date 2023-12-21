@@ -96,7 +96,14 @@ class _CadastroPageState extends State<CadastroPage> {
 
       await userCredential.user!.updateDisplayName(usernameController.text);
 
-      Navigator.pushNamed(context, '/inicial');
+      Navigator.pushNamed(
+        context,
+        '/inicial',
+        arguments: {
+          'username': usernameController.text,
+          // Adicione outros dados que você deseja passar aqui
+        },
+      );
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
         ScaffoldMessenger.of(context).showSnackBar(
