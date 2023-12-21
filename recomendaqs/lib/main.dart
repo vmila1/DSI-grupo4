@@ -7,6 +7,7 @@ import 'package:recomendaqs/telas/tela_inicial.dart';
 import 'package:recomendaqs/telas/tela_perfil.dart';
 import 'package:recomendaqs/telas/tela_hq.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,16 +20,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       initialRoute: '/login',
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/inicial':
+            // Ao receber a rota '/inicial', verifica se há argumentos e navega para a tela apropriada
+            final Map<String, dynamic>? args =
+                settings.arguments as Map<String, dynamic>?;
+
+            return MaterialPageRoute(
+              builder: (context) => HomePage(args: args),
+            );
+
+          // Adicione outros casos conforme necessário
+
+          default:
+            // Se a rota não for encontrada, você pode simplesmente não retornar nada
+            return null;
+        }
+      },
       routes: {
         '/lido': (context) => const LidoPage(),
         '/login': (context) => const LoginPage(),
         '/cadastro': (context) => const CadastroPage(),
-        '/inicial': (context) => const HomePage(),
         '/perfil': (context) => const TelaPerfil(),
         '/favoritos': (context) => const FavoritoPage(),
-        '/hq': (context) => const HqPage()
+        '/hq': (context) => const HqPage(),
+        '/pesquisa': (context) => const TelaPesquisa(),
       },
     );
   }

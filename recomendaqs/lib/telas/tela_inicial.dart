@@ -1,22 +1,25 @@
-// ignore_for_file: avoid_print, non_constant_identifier_names
-
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Map<String, dynamic>? args;
+  HomePage({Key? key, this.args}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String nomeUsuario = "Leon Lourenço";
+  String nomeUsuario = "leon";
   String imagemUsuario = "assets/images/icone_perfil.jpg";
   int paginaAtual = 0;
 
   @override
   Widget build(BuildContext context) {
+    String nomeUsuario = widget.args?['username'] ??
+        "leon"; // Usando dados do argumento ou valor padrão
+    String imagemUsuario = widget.args?['imagem'] ??
+        "assets/images/icone_perfil.jpg"; // Usando dados do argumento ou valor padrão
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
@@ -31,7 +34,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-
       body: Stack(
         children: [
           Image.asset(
@@ -40,7 +42,6 @@ class _HomePageState extends State<HomePage> {
             height: double.infinity,
             width: double.infinity,
           ),
-
           SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,34 +50,43 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'HQs Favoritas:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 ListaHQsFavoritas(),
-
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Recomendações:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 ListaRecomendacoes(),
-
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Populares no momento:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 ListaPopulares(),
-
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Lançamentos:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 ListaLancamentos(),
@@ -85,7 +95,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         items: const <BottomNavigationBarItem>[
@@ -110,7 +119,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Função para atualizar a página conforme a navegação
   void _atualizarPagina(int index) {
     setState(() {
       paginaAtual = index;
@@ -118,21 +126,17 @@ class _HomePageState extends State<HomePage> {
 
     switch (index) {
       case 1:
-        // Tela de Busca (falta implementar essa aba)
-        // Navigator.pushNamed(context, '/buscar');
+        Navigator.pushNamed(context, '/pesquisa');
         break;
       case 2:
-        // Tela de Perfil
-        Navigator.pushNamed(context, '/perfil'); 
+        Navigator.pushNamed(context, '/perfil');
         break;
       default:
-        // Tela Inicial
-        Navigator.pushNamed(context, '/inicial');
+        // Se voltar para a tela inicial, não navegue, pois já estamos nela
         break;
     }
   }
 }
-
 
 class ListaHQsFavoritas extends StatelessWidget {
   final List<String> hqsFavoritas = [
@@ -178,12 +182,11 @@ class ListaHQsFavoritas extends StatelessWidget {
   }
 }
 
-
 class ListaRecomendacoes extends StatelessWidget {
   final List<String> Recomendacoes = [
     'assets/images/imagemhq.jpg',
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -194,7 +197,7 @@ class ListaRecomendacoes extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (index == 0){
+              if (index == 0) {
                 Navigator.pushNamed(context, '/hq');
               }
               print("Imagem Recomendações ${index + 1} clicada!");
@@ -215,7 +218,6 @@ class ListaRecomendacoes extends StatelessWidget {
   }
 }
 
-
 class ListaPopulares extends StatelessWidget {
   final List<String> Populares = [
     "assets/images/HQs/Popu/drman.jpg",
@@ -223,7 +225,6 @@ class ListaPopulares extends StatelessWidget {
     "assets/images/HQs/Popu/batmanarm.jpg",
     "assets/images/HQs/Popu/dead.jpeg",
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -253,12 +254,11 @@ class ListaPopulares extends StatelessWidget {
   }
 }
 
-
 class ListaLancamentos extends StatelessWidget {
   final List<String> Lancamentos = [
-  "assets/images/HQs/Lan/simpsons.jpg",
-  "assets/images/HQs/Lan/super.jpeg",
-  "assets/images/HQs/Lan/turma.jpg",
+    "assets/images/HQs/Lan/simpsons.jpg",
+    "assets/images/HQs/Lan/super.jpeg",
+    "assets/images/HQs/Lan/turma.jpg",
   ];
 
   @override
