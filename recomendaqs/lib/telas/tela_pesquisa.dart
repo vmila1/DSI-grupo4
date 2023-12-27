@@ -35,6 +35,8 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: const Text(''),
+        iconTheme: IconThemeData(
+            color: Colors.white), // Define a cor do ícone de voltar como branca
         actions: <Widget>[],
       ),
       body: Stack(
@@ -159,7 +161,7 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
         Navigator.pushNamed(context, '/perfil');
       }
     });
-        switch (index) {
+    switch (index) {
       case 1:
         // Tela de Busca
         Navigator.pushNamed(context, '/pesquisa');
@@ -175,4 +177,3 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
     }
   }
 }
-
