@@ -8,6 +8,7 @@ import 'package:recomendaqs/telas/tela_perfil.dart';
 import 'package:recomendaqs/telas/tela_hq.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:recomendaqs/telas/tela_pesquisa.dart';
+import 'package:recomendaqs/telas/tela_sobre.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/favoritos': (context) => const FavoritoPage(),
         '/hq': (context) => const HqPage(),
         '/pesquisa': (context) => const TelaPesquisa(),
+        '/sobre': (context) => const TelaSobre(),
       },
     );
   }
