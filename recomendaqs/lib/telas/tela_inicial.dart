@@ -1,25 +1,42 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  final Map<String, dynamic>? args;
-  HomePage({Key? key, this.args}) : super(key: key);
+  // Remova o parâmetro args se não estiver sendo usado
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String nomeUsuario = "leon";
+  String nomeUsuario = "";
   String imagemUsuario = "assets/images/icone_perfil.jpg";
   int paginaAtual = 0;
 
   @override
-  Widget build(BuildContext context) {
-    String nomeUsuario = widget.args?['username'] ??
-        "leon"; // Usando dados do argumento ou valor padrão
-    String imagemUsuario = widget.args?['imagem'] ??
-        "assets/images/icone_perfil.jpg"; // Usando dados do argumento ou valor padrão
+  void initState() {
+    super.initState();
+    _carregarDadosUsuario();
+  }
 
+  // Função para carregar os dados do usuário
+  Future<void> _carregarDadosUsuario() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        setState(() {
+          nomeUsuario = user.displayName ?? "Nome Padrão";
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),

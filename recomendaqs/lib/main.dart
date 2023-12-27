@@ -26,25 +26,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/login',
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/inicial':
-            // Ao receber a rota '/inicial', verifica se há argumentos e navega para a tela apropriada
-            final Map<String, dynamic>? args =
-                settings.arguments as Map<String, dynamic>?;
-
-            return MaterialPageRoute(
-              builder: (context) => HomePage(args: args),
-            );
-
-          // Adicione outros casos conforme necessário
-
-          default:
-            // Se a rota não for encontrada, você pode simplesmente não retornar nada
-            return null;
-        }
-      },
       routes: {
+        '/inicial': (context) => const HomePage(),
         '/lido': (context) => const LidoPage(),
         '/login': (context) => const LoginPage(),
         '/cadastro': (context) => const CadastroPage(),
