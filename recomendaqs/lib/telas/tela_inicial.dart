@@ -40,13 +40,23 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: Text('Olá, $nomeUsuario'),
+        title: Text(
+          'Olá, $nomeUsuario',
+          style: TextStyle(
+              color: Colors.white), // Define a cor do texto como branca
+        ),
+        automaticallyImplyLeading: false, // Remove a seta de voltar
         actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundImage: AssetImage(imagemUsuario),
-              radius: 30,
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/perfil');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                backgroundImage: AssetImage(imagemUsuario),
+                radius: 30,
+              ),
             ),
           ),
         ],

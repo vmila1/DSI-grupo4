@@ -37,7 +37,7 @@ class _HqPageState extends State<HqPage> {
   String resumo =
       "“A estrela. O ícone. A bruxa. O Construto. O Deus. O engenheiro. O rei. "
       "O mundo está sempre em perigo, e uma nova equipe de Vingadores se mobiliza "
-      "para enfrentar quaisquer perigos que ousem ameaçar o planeta. Mas quando " 
+      "para enfrentar quaisquer perigos que ousem ameaçar o planeta. Mas quando "
       "Terminus ataca, um novo e insidioso perigo surge: um que os Vingadores "
       "conhecem muito bem e que vem a eles na mais perigosa das formas - a de um amigo.“";
 
@@ -55,17 +55,21 @@ class _HqPageState extends State<HqPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(86, 83, 255, 1),
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               '$generoQuadrinho | $nomePersonagem | $produtoraQuadrinho',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white), // Define a cor do texto como branca
             ),
             SizedBox(width: 10),
           ],
         ),
+        iconTheme: IconThemeData(
+            color: Colors.white), // Define a cor do ícone de voltar como branca
       ),
       body: Stack(
         children: [
