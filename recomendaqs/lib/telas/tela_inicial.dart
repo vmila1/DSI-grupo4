@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  // Remova o parâmetro args se não estiver sendo usado
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -20,7 +20,6 @@ class _HomePageState extends State<HomePage> {
     _carregarDadosUsuario();
   }
 
-  // Função para carregar os dados do usuário
   Future<void> _carregarDadosUsuario() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
@@ -43,9 +42,10 @@ class _HomePageState extends State<HomePage> {
         title: Text(
           'Olá, $nomeUsuario',
           style: TextStyle(
-              color: Colors.white), // Define a cor do texto como branca
+            color: Colors.white,
+          ),
         ),
-        automaticallyImplyLeading: false, // Remove a seta de voltar
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           GestureDetector(
             onTap: () {
@@ -78,45 +78,49 @@ class _HomePageState extends State<HomePage> {
                   child: Text(
                     'HQs Favoritas:',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                ListaHQsFavoritas(),
+                ListaHQsFavoritasFirestore(),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Recomendações:',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                ListaRecomendacoes(),
+                ListaRecomendacoesFirestore(),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Populares no momento:',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                ListaPopulares(),
+                ListaPopularesFirestore(),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Lançamentos:',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                ListaLancamentos(),
+                ListaLancamentosFirestore(),
               ],
             ),
           ),
@@ -159,49 +163,51 @@ class _HomePageState extends State<HomePage> {
         Navigator.pushNamed(context, '/perfil');
         break;
       default:
-        // Se voltar para a tela inicial, não navegue, pois já estamos nela
         break;
     }
   }
 }
 
-class ListaHQsFavoritas extends StatelessWidget {
-  final List<String> hqsFavoritas = [
-    'assets/images/HQs/Fav/homem_aranha.jpg',
-    'assets/images/HQs/Fav/batman.jpg',
-    'assets/images/HQs/Fav/aranha_uniforme.jpg',
-    'assets/images/HQs/Fav/aranha_wolverine.jpg',
-    'assets/images/HQs/Fav/dr_manhatan.jpeg',
-    'assets/images/HQs/Fav/MulherMaravilha.jpg',
-    'assets/images/HQs/Fav/drman.jpg',
-    'assets/images/HQs/Fav/liga.jpeg',
-    'assets/images/HQs/Fav/batmanarm.jpg',
-    'assets/images/HQs/Fav/simpsons.jpg',
-    'assets/images/HQs/Fav/super.jpeg',
-    'assets/images/HQs/Fav/turma.jpg',
-  ];
-
+class ListaHQsFavoritasFirestore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 195,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: hqsFavoritas.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              print("Imagem Favoritas ${index + 1} clicada!");
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                hqsFavoritas[index],
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: 115,
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+
+          var hqs = snapshot.data!.docs;
+
+          List<Widget> hqWidgets = [];
+          for (var hq in hqs) {
+            var hqData = hq.data() as Map<String, dynamic>;
+            var imagemHQ = hqData['imagem'];
+
+            hqWidgets.add(
+              GestureDetector(
+                onTap: () {
+                  print("Imagem HQ Favorita clicada!");
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.network(
+                    imagemHQ,
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: 115,
+                  ),
+                ),
               ),
-            ),
+            );
+          }
+
+          return ListView(
+            scrollDirection: Axis.horizontal,
+            children: hqWidgets,
           );
         },
       ),
@@ -209,35 +215,46 @@ class ListaHQsFavoritas extends StatelessWidget {
   }
 }
 
-class ListaRecomendacoes extends StatelessWidget {
-  final List<String> Recomendacoes = [
-    'assets/images/imagemhq.jpg',
-  ];
-
+class ListaRecomendacoesFirestore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 195,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: Recomendacoes.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              if (index == 0) {
-                Navigator.pushNamed(context, '/hq');
-              }
-              print("Imagem Recomendações ${index + 1} clicada!");
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+
+          var recomendacoes = snapshot.data!.docs
+              .map(
+                (hq) => hq['imagem'] as String,
+              )
+              .toList();
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: recomendacoes.length,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () {
+                  if (index == 0) {
+                    Navigator.pushNamed(context, '/hq');
+                  }
+                  print("Imagem Recomendações ${index + 1} clicada!");
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.network(
+                    recomendacoes[index],
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: 115,
+                  ),
+                ),
+              );
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                Recomendacoes[index],
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: 115,
-              ),
-            ),
           );
         },
       ),
@@ -245,35 +262,43 @@ class ListaRecomendacoes extends StatelessWidget {
   }
 }
 
-class ListaPopulares extends StatelessWidget {
-  final List<String> Populares = [
-    "assets/images/HQs/Popu/drman.jpg",
-    "assets/images/HQs/Popu/liga.jpeg",
-    "assets/images/HQs/Popu/batmanarm.jpg",
-    "assets/images/HQs/Popu/dead.jpeg",
-  ];
-
+class ListaPopularesFirestore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 195,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: Populares.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              print("Imagem Populares ${index + 1} clicada!");
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+
+          var populares = snapshot.data!.docs
+              .map(
+                (hq) => hq['imagem'] as String,
+              )
+              .toList();
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: populares.length,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () {
+                  print("Imagem Populares ${index + 1} clicada!");
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.network(
+                    populares[index],
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: 115,
+                  ),
+                ),
+              );
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                Populares[index],
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: 115,
-              ),
-            ),
           );
         },
       ),
@@ -281,34 +306,43 @@ class ListaPopulares extends StatelessWidget {
   }
 }
 
-class ListaLancamentos extends StatelessWidget {
-  final List<String> Lancamentos = [
-    "assets/images/HQs/Lan/simpsons.jpg",
-    "assets/images/HQs/Lan/super.jpeg",
-    "assets/images/HQs/Lan/turma.jpg",
-  ];
-
+class ListaLancamentosFirestore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 195,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: Lancamentos.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              print("Imagem Lançamentos ${index + 1} clicada!");
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+
+          var lancamentos = snapshot.data!.docs
+              .map(
+                (hq) => hq['imagem'] as String,
+              )
+              .toList();
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: lancamentos.length,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () {
+                  print("Imagem Lançamentos ${index + 1} clicada!");
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.network(
+                    lancamentos[index],
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: 115,
+                  ),
+                ),
+              );
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                Lancamentos[index],
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: 115,
-              ),
-            ),
           );
         },
       ),
