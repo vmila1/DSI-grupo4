@@ -319,7 +319,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
 
     switch (index) {
       case 1:
-        // Tela de Busca (falta implementar essa aba)
+        // Tela de Busca
         Navigator.pushNamed(context, '/pesquisa');
         break;
       case 2:

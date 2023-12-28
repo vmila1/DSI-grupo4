@@ -14,13 +14,20 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HqPage(),
+      home: HqPage(
+        hqDocumentName: '',
+        imagemHQ: '',
+      ),
     );
   }
 }
 
 class HqPage extends StatefulWidget {
-  const HqPage({Key? key}) : super(key: key);
+  final String hqDocumentName;
+
+  const HqPage(
+      {Key? key, required this.hqDocumentName, required String imagemHQ})
+      : super(key: key);
 
   @override
   _HqPageState createState() => _HqPageState();
@@ -62,14 +69,16 @@ class _HqPageState extends State<HqPage> {
             Text(
               '$generoQuadrinho | $nomePersonagem | $produtoraQuadrinho',
               style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white), // Define a cor do texto como branca
+                fontSize: 20,
+                color: Colors.white,
+              ),
             ),
             SizedBox(width: 10),
           ],
         ),
         iconTheme: IconThemeData(
-            color: Colors.white), // Define a cor do ícone de voltar como branca
+          color: Colors.white,
+        ),
       ),
       body: Stack(
         children: [
@@ -89,7 +98,7 @@ class _HqPageState extends State<HqPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 40), // Espaçamento no topo
+                SizedBox(height: 40),
                 Text(
                   nomeQuadrinho,
                   textAlign: TextAlign.center,
@@ -250,6 +259,57 @@ class _HqPageState extends State<HqPage> {
       ),
     );
   }
+
+  Widget _itemChats({
+    String avatar = '',
+    String name = '',
+    String chat = '',
+    String time = '00.00',
+  }) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 5),
+      elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          children: [
+            Avatar(
+              margin: EdgeInsets.only(right: 15),
+              size: 40,
+              image: avatar,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  chat,
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+            Spacer(),
+            Text(
+              time,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class Avatar extends StatelessWidget {
@@ -274,55 +334,4 @@ class Avatar extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _itemChats({
-  String avatar = '',
-  String name = '',
-  String chat = '',
-  String time = '00.00',
-}) {
-  return Card(
-    margin: EdgeInsets.symmetric(vertical: 5),
-    elevation: 0,
-    child: Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Row(
-        children: [
-          Avatar(
-            margin: EdgeInsets.only(right: 15),
-            size: 40,
-            image: avatar,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                chat,
-                style: TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          Spacer(),
-          Text(
-            time,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }

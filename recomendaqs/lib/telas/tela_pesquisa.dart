@@ -35,8 +35,7 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: const Text(''),
-        iconTheme: IconThemeData(
-            color: Colors.white), // Define a cor do ícone de voltar como branca
+        iconTheme: IconThemeData(color: Colors.white),
         actions: <Widget>[],
       ),
       body: Stack(
@@ -90,9 +89,7 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                           historicoDeBusca[i].imagePath,
                           height: 100.0,
                         ),
-                        const SizedBox(
-                            width:
-                                16.0), // Espaçamento entre a imagem e as informações
+                        const SizedBox(width: 16.0),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
