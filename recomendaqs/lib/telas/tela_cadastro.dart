@@ -109,6 +109,17 @@ class _CadastroPageState extends State<CadastroPage> {
             height: double.infinity,
             width: double.infinity,
           ),
+          Positioned(
+          top: 200, 
+          left: 0,
+          right: 0,
+          child: Image.asset(
+            'assets/images/logo.png',
+            height: 300, 
+            width: 500, 
+            fit: BoxFit.contain, 
+          ),
+        ),
           ClipPath(
             clipper: WaveClipper(),
             child: Container(
