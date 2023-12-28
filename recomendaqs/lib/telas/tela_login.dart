@@ -56,15 +56,35 @@ class _LoginPageState extends State<LoginPage> {
         nomeUsuario = userCredential.user?.displayName;
       });
 
-      // Login bem-sucedido, redirecione para a página desejada
-      Navigator.pushReplacementNamed(context, '/inicial',
-          arguments: {'username': nomeUsuario});
+      // Exibir mensagem de login bem-sucedido
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login bem-sucedido. Bem-vindo, $nomeUsuario!'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 1),
+        ),
+      );
+
+      // Aguarde um pouco antes de redirecionar para a próxima página
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Login bem-sucedido, redirecione para a próxima página
+      Navigator.pushReplacementNamed(context, '/inicial');
     } catch (e) {
       // Trate qualquer exceção que possa ocorrer durante o login
       print('Erro durante o login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Falha no login. Verifique suas credenciais.'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          action: SnackBarAction(
+            label: "OK",
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
         ),
       );
     }

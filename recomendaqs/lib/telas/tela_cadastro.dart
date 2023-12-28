@@ -29,7 +29,7 @@ class WaveClipper extends CustomClipper<Path> {
 }
 
 class CadastroPage extends StatefulWidget {
-  const CadastroPage({Key? key});
+  const CadastroPage({Key? key}) : super(key: key);
 
   @override
   _CadastroPageState createState() => _CadastroPageState();
@@ -44,47 +44,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  String? _validateUsername(String value) {
-    if (value.isEmpty) {
-      return 'Digite um nome de usuário válido';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String value) {
-    if (value.isEmpty) {
-      return 'Digite um e-mail válido';
-    }
-
-    if (!value.contains('@')) {
-      return 'O e-mail deve conter @';
-    }
-
-    if (value.length < 5) {
-      return 'O e-mail deve ter pelo menos 5 caracteres';
-    }
-
-    return null;
-  }
-
-  String? _validateSenha(String value) {
-    if (value.isEmpty) {
-      return 'Digite uma senha válida';
-    }
-
-    if (value.length < 6) {
-      return 'A senha deve ter pelo menos 6 caracteres';
-    }
-
-    return null;
-  }
-
-  String? _validateConfirmSenha(String value) {
-    if (value != senhaController.text) {
-      return 'As senhas não coincidem';
-    }
-    return null;
-  }
+  String? nomeUsuario;
 
   Future<void> _cadastrarUsuario() async {
     try {
@@ -94,26 +54,46 @@ class _CadastroPageState extends State<CadastroPage> {
         password: senhaController.text,
       );
 
-      await userCredential.user!.updateDisplayName(usernameController.text);
+      User? user = userCredential.user;
 
-      Navigator.pushNamed(
-        context,
-        '/inicial',
-        arguments: {
-          'username': usernameController.text,
-          // Adicione outros dados que você deseja passar aqui
-        },
+      // Defina o nome de exibição
+      await user?.updateProfile(displayName: usernameController.text);
+
+      setState(() {
+        nomeUsuario = user?.displayName;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cadastro realizado com sucesso para $nomeUsuario.'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 1),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+        ),
       );
+
+      Navigator.pushReplacementNamed(context, '/inicial');
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('O e-mail já está cadastrado.'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+            action: SnackBarAction(
+              label: "OK",
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
           ),
         );
-        print("O usuário já está cadastrado");
-      } else {
-        print("Erro ao cadastrar usuário: ${e.message}");
       }
     }
   }
@@ -259,5 +239,47 @@ class _CadastroPageState extends State<CadastroPage> {
         filled: true,
       ),
     );
+  }
+
+  String? _validateUsername(String value) {
+    if (value.isEmpty) {
+      return 'Digite um nome de usuário válido';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String value) {
+    if (value.isEmpty) {
+      return 'Digite um e-mail válido';
+    }
+
+    if (!value.contains('@')) {
+      return 'O e-mail deve conter @';
+    }
+
+    if (value.length < 5) {
+      return 'O e-mail deve ter pelo menos 5 caracteres';
+    }
+
+    return null;
+  }
+
+  String? _validateSenha(String value) {
+    if (value.isEmpty) {
+      return 'Digite uma senha válida';
+    }
+
+    if (value.length < 6) {
+      return 'A senha deve ter pelo menos 6 caracteres';
+    }
+
+    return null;
+  }
+
+  String? _validateConfirmSenha(String value) {
+    if (value != senhaController.text) {
+      return 'As senhas não coincidem';
+    }
+    return null;
   }
 }
