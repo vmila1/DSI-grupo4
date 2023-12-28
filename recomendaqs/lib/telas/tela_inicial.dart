@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:recomendaqs/telas/tela_hq.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -186,23 +187,34 @@ class ListaHQsFavoritasFirestore extends StatelessWidget {
           for (var hq in hqs) {
             var hqData = hq.data() as Map<String, dynamic>;
             var imagemHQ = hqData['imagem'];
+            var nomeDocumento = hq.id; // Obtemos o nome do documento
 
-            hqWidgets.add(
-              GestureDetector(
-                onTap: () {
-                  print("Imagem HQ Favorita clicada!");
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.network(
-                    imagemHQ,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: 115,
+            if (imagemHQ != null) {
+              hqWidgets.add(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HqPage(
+                          hqDocumentName: nomeDocumento,
+                          imagemHQ: '',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.network(
+                      imagemHQ,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: 115,
+                    ),
                   ),
                 ),
-              ),
-            );
+              );
+            }
           }
 
           return ListView(
@@ -229,7 +241,13 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
 
           var recomendacoes = snapshot.data!.docs
               .map(
-                (hq) => hq['imagem'] as String,
+                (hq) => hq.data() as Map<String, dynamic>,
+              )
+              .where(
+                (hqData) => hqData['imagem'] != null,
+              )
+              .map(
+                (hqData) => hqData['imagem'] as String,
               )
               .toList();
 
@@ -237,12 +255,19 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: recomendacoes.length,
             itemBuilder: (BuildContext context, int index) {
+              var nomeDocumento = snapshot.data!.docs[index].id;
+
               return GestureDetector(
                 onTap: () {
-                  if (index == 0) {
-                    Navigator.pushNamed(context, '/hq');
-                  }
-                  print("Imagem Recomendações ${index + 1} clicada!");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HqPage(
+                        hqDocumentName: nomeDocumento,
+                        imagemHQ: '',
+                      ),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -276,7 +301,13 @@ class ListaPopularesFirestore extends StatelessWidget {
 
           var populares = snapshot.data!.docs
               .map(
-                (hq) => hq['imagem'] as String,
+                (hq) => hq.data() as Map<String, dynamic>,
+              )
+              .where(
+                (hqData) => hqData['imagem'] != null,
+              )
+              .map(
+                (hqData) => hqData['imagem'] as String,
               )
               .toList();
 
@@ -284,9 +315,19 @@ class ListaPopularesFirestore extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: populares.length,
             itemBuilder: (BuildContext context, int index) {
+              var nomeDocumento = snapshot.data!.docs[index].id;
+
               return GestureDetector(
                 onTap: () {
-                  print("Imagem Populares ${index + 1} clicada!");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HqPage(
+                        hqDocumentName: nomeDocumento,
+                        imagemHQ: '',
+                      ),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -320,7 +361,13 @@ class ListaLancamentosFirestore extends StatelessWidget {
 
           var lancamentos = snapshot.data!.docs
               .map(
-                (hq) => hq['imagem'] as String,
+                (hq) => hq.data() as Map<String, dynamic>,
+              )
+              .where(
+                (hqData) => hqData['imagem'] != null,
+              )
+              .map(
+                (hqData) => hqData['imagem'] as String,
               )
               .toList();
 
@@ -328,9 +375,19 @@ class ListaLancamentosFirestore extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: lancamentos.length,
             itemBuilder: (BuildContext context, int index) {
+              var nomeDocumento = snapshot.data!.docs[index].id;
+
               return GestureDetector(
                 onTap: () {
-                  print("Imagem Lançamentos ${index + 1} clicada!");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HqPage(
+                        hqDocumentName: nomeDocumento,
+                        imagemHQ: '',
+                      ),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
