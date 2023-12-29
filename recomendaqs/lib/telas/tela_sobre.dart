@@ -28,6 +28,17 @@ class TelaSobre extends StatelessWidget {
             height: double.infinity,
             width: double.infinity,
           ),
+          Positioned(
+            top: 200,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 700,
+              width: 1000,
+              fit: BoxFit.contain,
+            ),
+          ),
           SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(

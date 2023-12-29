@@ -251,6 +251,9 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
               )
               .toList();
 
+          // Embaralhar a lista de recomendações aleatoriamente
+          recomendacoes.shuffle();
+
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: recomendacoes.length,
@@ -353,7 +356,11 @@ class ListaLancamentosFirestore extends StatelessWidget {
     return SizedBox(
       height: 195,
       child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('HQs')
+            .orderBy('anolançamento',
+                descending: true) // Adicionado ordenação por ano de lançamento
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
