@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       ),
       home: HqPage(
         hqDocumentName: '',
-        imagemHQ: '',
+        imagemHQ: 'assets/images/imagemhq.jpg',
       ),
     );
   }
@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
 
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
+  final String imagemHQ;
 
-  const HqPage(
-      {Key? key, required this.hqDocumentName, required String imagemHQ})
+  const HqPage({Key? key, required this.hqDocumentName, required this.imagemHQ})
       : super(key: key);
 
   @override
@@ -34,7 +34,6 @@ class HqPage extends StatefulWidget {
 }
 
 class _HqPageState extends State<HqPage> {
-  int totalImagens = 9;
   String nomeQuadrinho = "Os Vingadores: Kang e o seu momento perdido";
   String generoQuadrinho = "Gênero";
   String produtoraQuadrinho = "Produtora";
@@ -51,6 +50,27 @@ class _HqPageState extends State<HqPage> {
   TextEditingController _textEditingController = TextEditingController();
   bool favorito = false;
   bool lido = false;
+
+  List<Map<String, String>> comentarios = [
+    {
+      'avatar': 'assets/images/icone_perfil.jpg',
+      'name': 'João',
+      'chat': 'Quadrinho top demais',
+      'time': '15:30',
+    },
+    {
+      'avatar': 'assets/images/avatar.jpg',
+      'name': 'Maria',
+      'chat': 'Achei ruim',
+      'time': '15:32',
+    },
+    {
+      'avatar': 'assets/images/avatar2.jpg',
+      'name': 'Pedro',
+      'chat': 'Gostei! massa.',
+      'time': '15:32',
+    },
+  ];
 
   @override
   void dispose() {
@@ -83,7 +103,7 @@ class _HqPageState extends State<HqPage> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/images/imagemhq.jpg',
+            widget.imagemHQ,
             fit: BoxFit.cover,
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
@@ -110,7 +130,7 @@ class _HqPageState extends State<HqPage> {
                 ),
                 SizedBox(height: 20),
                 Image.asset(
-                  'assets/images/imagemhq.jpg',
+                  widget.imagemHQ,
                   height: 250,
                   width: 250,
                 ),
@@ -219,39 +239,63 @@ class _HqPageState extends State<HqPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-                _itemChats(
-                  avatar: 'assets/images/avatar.jpg',
-                  name: 'João',
-                  chat: 'Quadrinho toppp demais',
-                  time: '15:30',
-                ),
-                _itemChats(
-                  avatar: 'assets/images/avatar.jpg',
-                  name: 'Maria',
-                  chat: 'Achei uma bosta',
-                  time: '15:32',
-                ),
-                _itemChats(
-                  avatar: 'assets/images/avatar.jpg',
-                  name: 'Pedro',
-                  chat: 'Gostei! massa.',
-                  time: '15:32',
-                ),
-                SizedBox(height: 20),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  margin: EdgeInsets.symmetric(horizontal: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: comentarios.map((comentario) {
+                      return _itemChats(
+                        avatar: comentario['avatar']!,
+                        name: comentario['name']!,
+                        chat: comentario['chat']!,
+                        time: comentario['time']!,
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(height: 30),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 40),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
                     color: Colors.white,
                   ),
-                  child: TextField(
-                    controller: _textEditingController,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
+                  child: Row(
+                    children: [
+                      Avatar(
+                        size: 40,
+                        image: 'assets/images/avatar.jpg',
+                        margin: EdgeInsets.only(right: 15),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: _textEditingController,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Digite seu comentário...',
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                SizedBox(height: 20),
               ],
             ),
           ),
@@ -261,52 +305,48 @@ class _HqPageState extends State<HqPage> {
   }
 
   Widget _itemChats({
-    String avatar = '',
-    String name = '',
-    String chat = '',
-    String time = '00.00',
+    required String avatar,
+    required String name,
+    required String chat,
+    required String time,
   }) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          children: [
-            Avatar(
-              margin: EdgeInsets.only(right: 15),
-              size: 40,
-              image: avatar,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Avatar(
+            margin: EdgeInsets.only(right: 15),
+            size: 40,
+            image: avatar,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-                SizedBox(height: 5),
-                Text(
-                  chat,
-                  style: TextStyle(
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-            Spacer(),
-            Text(
-              time,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
               ),
+              SizedBox(height: 5),
+              Text(
+                chat,
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          Spacer(),
+          Text(
+            time,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
