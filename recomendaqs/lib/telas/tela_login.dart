@@ -67,7 +67,6 @@ class _LoginPageState extends State<LoginPage> {
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacementNamed(context, '/inicial');
     } catch (e) {
-
       print('Erro durante o login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -107,17 +106,29 @@ class _LoginPageState extends State<LoginPage> {
               color: const Color(0xFF5653FF),
             ),
           ),
+          // Imagem sobrepondo a onda
           Positioned(
-          top: 200, 
-          left: 0,
-          right: 0,
-          child: Image.asset(
-            'assets/images/logo.png',
-            height: 400, 
-            width: 500, 
-            fit: BoxFit.contain, 
+            top: 20,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/recomendaqs.png',
+              height: 80, // Ajuste conforme necessário
+              width: 160, // Ajuste conforme necessário
+              fit: BoxFit.contain,
+            ),
           ),
-        ),
+          Positioned(
+            top: 200,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 400,
+              width: 500,
+              fit: BoxFit.contain,
+            ),
+          ),
           // Conteúdo na parte inferior
           Padding(
             padding: const EdgeInsets.all(16.0),

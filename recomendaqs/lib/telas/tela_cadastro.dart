@@ -110,22 +110,34 @@ class _CadastroPageState extends State<CadastroPage> {
             width: double.infinity,
           ),
           Positioned(
-          top: 200, 
-          left: 0,
-          right: 0,
-          child: Image.asset(
-            'assets/images/logo.png',
-            height: 300, 
-            width: 500, 
-            fit: BoxFit.contain, 
+            top: 200,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 300,
+              width: 500,
+              fit: BoxFit.contain,
+            ),
           ),
-        ),
           ClipPath(
             clipper: WaveClipper(),
             child: Container(
               width: double.infinity,
               height: 200,
               color: const Color(0xFF5653FF),
+            ),
+          ),
+          // Imagem sobrepondo a onda
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/recomendaqs.png',
+              height: 80, // Ajuste conforme necessário
+              width: 160, // Ajuste conforme necessário
+              fit: BoxFit.contain,
             ),
           ),
           Padding(
