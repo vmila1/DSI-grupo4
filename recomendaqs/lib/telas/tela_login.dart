@@ -79,28 +79,26 @@ class _LoginPageState extends State<LoginPage> {
       print('Erro durante o login: $e');
       setState(() {
         loginError = true;
-        emailError = false;
-        senhaError = false;
+        emailError =
+            e.code == 'invalid-email' || e.code == 'invalid-credential';
+        senhaError = e.code == 'invalid-credential';
         switch (e.code) {
           case 'wrong-password':
-            senhaError = true;
-            errorMessage = 'Sua senha está incorreta. Tente novamente.';
+            errorMessage = 'Senha incorreta. Tente novamente.';
             break;
           case 'user-not-found':
-            emailError = true;
             errorMessage = 'Email não encontrado. Tente novamente.';
             break;
           case 'invalid-email':
-            emailError = true;
             errorMessage =
-                'O endereço de e-mail está mal formatado. Tente novamente.';
+                'O Email está mal formatado. Corrija-o e tente novamente.';
             break;
           case 'invalid-credential':
-            senhaError = true;
-            errorMessage = 'Senha inválida. Tente novamente.';
+            errorMessage =
+                'Email ou senha inválido. Verifique suas credenciais.';
             break;
           case 'too-many-requests':
-            senhaError = true;
+            senhaError = false;
             errorMessage =
                 'Muitas tentativas de login. Tente novamente mais tarde.';
             break;
