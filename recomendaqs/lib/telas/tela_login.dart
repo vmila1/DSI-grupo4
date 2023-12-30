@@ -44,6 +44,11 @@ class _LoginPageState extends State<LoginPage> {
 
   String? nomeUsuario;
 
+  bool loginError = false;
+  String errorMessage = '';
+  bool emailError = false;
+  bool senhaError = false;
+
   Future<void> _realizarLogin() async {
     try {
       UserCredential userCredential =
@@ -54,6 +59,10 @@ class _LoginPageState extends State<LoginPage> {
 
       setState(() {
         nomeUsuario = userCredential.user?.displayName;
+        loginError = false;
+        errorMessage = '';
+        emailError = false;
+        senhaError = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,11 +75,44 @@ class _LoginPageState extends State<LoginPage> {
 
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacementNamed(context, '/inicial');
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       print('Erro durante o login: $e');
+      setState(() {
+        loginError = true;
+        emailError = false;
+        senhaError = false;
+        switch (e.code) {
+          case 'wrong-password':
+            senhaError = true;
+            errorMessage = 'Sua senha está incorreta. Tente novamente.';
+            break;
+          case 'user-not-found':
+            emailError = true;
+            errorMessage = 'Email não encontrado. Tente novamente.';
+            break;
+          case 'invalid-email':
+            emailError = true;
+            errorMessage =
+                'O endereço de e-mail está mal formatado. Tente novamente.';
+            break;
+          case 'invalid-credential':
+            senhaError = true;
+            errorMessage = 'Senha inválida. Tente novamente.';
+            break;
+          case 'too-many-requests':
+            senhaError = true;
+            errorMessage =
+                'Muitas tentativas de login. Tente novamente mais tarde.';
+            break;
+          default:
+            errorMessage = 'Falha no login. Verifique suas credenciais.';
+            break;
+        }
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Falha no login. Verifique suas credenciais.'),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
@@ -82,6 +124,27 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       );
+
+      // Adicionando a janela flutuante (AlertDialog)
+      if (loginError) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Falha no Login'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 
@@ -90,33 +153,11 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Tela de fundo
           Image.asset(
             'assets/images/telafundo.png',
             fit: BoxFit.cover,
             height: double.infinity,
             width: double.infinity,
-          ),
-          // Onda na parte superior
-          ClipPath(
-            clipper: WaveClipper(),
-            child: Container(
-              width: double.infinity,
-              height: 200, // Ajuste conforme necessário
-              color: const Color(0xFF5653FF),
-            ),
-          ),
-          // Imagem sobrepondo a onda
-          Positioned(
-            top: 20,
-            left: 0,
-            right: 0,
-            child: Image.asset(
-              'assets/images/recomendaqs.png',
-              height: 80, // Ajuste conforme necessário
-              width: 160, // Ajuste conforme necessário
-              fit: BoxFit.contain,
-            ),
           ),
           Positioned(
             top: 200,
@@ -124,12 +165,30 @@ class _LoginPageState extends State<LoginPage> {
             right: 0,
             child: Image.asset(
               'assets/images/logo.png',
-              height: 400,
+              height: 300,
               width: 500,
               fit: BoxFit.contain,
             ),
           ),
-          // Conteúdo na parte inferior
+          ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              color: const Color(0xFF5653FF),
+            ),
+          ),
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/recomendaqs.png',
+              height: 80,
+              width: 160,
+              fit: BoxFit.contain,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -149,30 +208,48 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: emailController,
+                    style: TextStyle(
+                      color: emailError ? Colors.red : Colors.grey,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       labelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 95, 95, 95)),
+                        color: Color.fromARGB(255, 95, 95, 95),
+                      ),
                       fillColor: Colors.white,
                       filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: emailError ? Colors.red : Colors.blue,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: senhaController,
                     obscureText: true,
+                    style: TextStyle(
+                      color: senhaError ? Colors.red : Colors.grey,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Senha',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       labelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 95, 95, 95)),
+                        color: Color.fromARGB(255, 95, 95, 95),
+                      ),
                       fillColor: Colors.white,
                       filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: senhaError ? Colors.red : Colors.blue,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 15),
