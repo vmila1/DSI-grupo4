@@ -187,7 +187,7 @@ class ListaHQsFavoritasFirestore extends StatelessWidget {
           for (var hq in hqs) {
             var hqData = hq.data() as Map<String, dynamic>;
             var imagemHQ = hqData['imagem'];
-            var nomeDocumento = hq.id; // Obtemos o nome do documento
+            var nomeDocumento = hq.id;
 
             if (imagemHQ != null) {
               hqWidgets.add(
@@ -246,19 +246,17 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
               .where(
                 (hqData) => hqData['imagem'] != null,
               )
-              .map(
-                (hqData) => hqData['imagem'] as String,
-              )
               .toList();
 
-          // Embaralhar a lista de recomendações aleatoriamente
+          // Embaralhar a lista de recomendações
           recomendacoes.shuffle();
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: recomendacoes.length,
             itemBuilder: (BuildContext context, int index) {
-              var nomeDocumento = snapshot.data!.docs[index].id;
+              var hqData = recomendacoes[index];
+              var nomeDocumento = hqData['id'];
 
               return GestureDetector(
                 onTap: () {
@@ -275,7 +273,7 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.network(
-                    recomendacoes[index],
+                    hqData['imagem'] as String,
                     fit: BoxFit.cover,
                     height: double.infinity,
                     width: 115,
@@ -358,8 +356,7 @@ class ListaLancamentosFirestore extends StatelessWidget {
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('HQs')
-            .orderBy('anolançamento',
-                descending: true) // Adicionado ordenação por ano de lançamento
+            .orderBy('anoLançamento', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
