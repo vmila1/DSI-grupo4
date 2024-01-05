@@ -38,6 +38,98 @@ class _TelaPerfilState extends State<TelaPerfil> {
     }
   }
 
+  void _exibirDialogoEditarNome() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String novoNome = nomeUsuario ?? '';
+        return AlertDialog(
+          title: Text('Editar Nome'),
+          content: TextField(
+            onChanged: (text) {
+              novoNome = text;
+            },
+            decoration: InputDecoration(
+              labelText: 'Novo Nome',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar a caixa de diálogo
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar a caixa de diálogo
+                _atualizarNomeUsuario(
+                    novoNome); // Atualizar o nome no banco de dados
+              },
+              child: Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _atualizarNomeUsuario(String novoNome) async {
+    try {
+      User? user = _firebaseAuth.currentUser;
+
+      if (user != null) {
+        await user.updateDisplayName(novoNome);
+        _carregarDadosUsuario();
+      }
+    } catch (e) {
+      print('Erro ao atualizar nome do usuário: $e');
+    }
+  }
+
+  void _exibirDialogoConfirmacao() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar Exclusão'),
+          content: Text(
+              'Tem certeza de que deseja excluir sua conta? Esta ação é irreversível.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar a caixa de diálogo
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar a caixa de diálogo
+                _excluirConta(); // Executar a exclusão da conta
+              },
+              child: Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _excluirConta() async {
+    try {
+      await _firebaseAuth.currentUser?.delete();
+      Navigator.pushNamed(context, '/login');
+    } catch (e) {
+      print('Erro ao excluir a conta: $e');
+      // Trate o erro conforme necessário para a lógica do seu aplicativo
+    }
+  }
+
+  void _sairDaConta() async {
+    await _firebaseAuth.signOut();
+    Navigator.pushNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,13 +145,24 @@ class _TelaPerfilState extends State<TelaPerfil> {
             ),
 
             const SizedBox(height: 10),
-            Text(
-              nomeUsuario ?? 'Nome não definido',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white, // Cor do texto
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  nomeUsuario ?? 'Nome não definido',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    _exibirDialogoEditarNome();
+                  },
+                ),
+              ],
             ),
 
             const SizedBox(height: 20),
@@ -97,7 +200,8 @@ class _TelaPerfilState extends State<TelaPerfil> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Falta a aba de preferências
+                  // Adicione a navegação para a tela de preferências
+                  Navigator.pushNamed(context, '/preferencias');
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -244,7 +348,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -255,7 +358,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                       Navigator.pushNamed(context, '/sobre');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Cor do botão
+                      backgroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -266,9 +369,10 @@ class _TelaPerfilState extends State<TelaPerfil> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  // Botão Excluir Conta
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/login');
+                      _exibirDialogoConfirmacao();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red, // Cor do botão
@@ -278,7 +382,24 @@ class _TelaPerfilState extends State<TelaPerfil> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Text('Sair'),
+                      child: Text('Excluir Conta'),
+                    ),
+                  ),
+
+                  // Botão Sair da Conta
+                  ElevatedButton(
+                    onPressed: () {
+                      _sairDaConta();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // Cor do botão
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text('Sair da Conta'),
                     ),
                   ),
                 ],
@@ -311,7 +432,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
     );
   }
 
-  // Função para atualizar a página conforme a navegação
   void _atualizarPagina(int index) {
     setState(() {
       paginaAtual = index;
@@ -319,15 +439,12 @@ class _TelaPerfilState extends State<TelaPerfil> {
 
     switch (index) {
       case 1:
-        // Tela de Busca
         Navigator.pushNamed(context, '/pesquisa');
         break;
       case 2:
-        // Tela de Perfil
         Navigator.pushNamed(context, '/perfil');
         break;
       default:
-        // Tela Inicial
         Navigator.pushNamed(context, '/inicial');
         break;
     }
