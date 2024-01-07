@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recomendaqs/telas/tela_configuracoes_conta.dart';
 import 'package:recomendaqs/telas/tela_favoritos.dart';
 import 'package:recomendaqs/telas/tela_lidos.dart';
 import 'package:recomendaqs/telas/tela_login.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
             ),
         '/pesquisa': (context) => const TelaPesquisa(),
         '/sobre': (context) => const TelaSobre(),
+        '/configuracoes_conta': (context) => const ConfiguracaoConta()
       },
     );
   }

@@ -2,10 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TelaPerfil extends StatefulWidget {
-  const TelaPerfil({super.key});
+  const TelaPerfil({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _TelaPerfilState createState() => _TelaPerfilState();
 }
 
@@ -23,7 +22,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
     _carregarDadosUsuario();
   }
 
-  // Função para carregar os dados do usuário
   Future<void> _carregarDadosUsuario() async {
     try {
       User? user = _firebaseAuth.currentUser;
@@ -56,15 +54,14 @@ class _TelaPerfilState extends State<TelaPerfil> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fechar a caixa de diálogo
+                Navigator.of(context).pop();
               },
               child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fechar a caixa de diálogo
-                _atualizarNomeUsuario(
-                    novoNome); // Atualizar o nome no banco de dados
+                Navigator.of(context).pop();
+                _atualizarNomeUsuario(novoNome);
               },
               child: Text('Salvar'),
             ),
@@ -98,14 +95,14 @@ class _TelaPerfilState extends State<TelaPerfil> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fechar a caixa de diálogo
+                Navigator.of(context).pop();
               },
               child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fechar a caixa de diálogo
-                _excluirConta(); // Executar a exclusão da conta
+                Navigator.of(context).pop();
+                _excluirConta();
               },
               child: Text('Confirmar'),
             ),
@@ -121,7 +118,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
       Navigator.pushNamed(context, '/login');
     } catch (e) {
       print('Erro ao excluir a conta: $e');
-      // Trate o erro conforme necessário para a lógica do seu aplicativo
     }
   }
 
@@ -133,7 +129,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E), // Cor de fundo
+      backgroundColor: const Color(0xFF1E1E1E),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -143,7 +139,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
               radius: 50,
               backgroundImage: AssetImage(imagemUsuario),
             ),
-
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -164,7 +159,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ),
               ],
             ),
-
             const SizedBox(height: 20),
             const Text(
               'Configurações de HQs',
@@ -175,7 +169,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 color: Colors.white,
               ),
             ),
-
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
@@ -194,32 +187,12 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   // Adicione a navegação para a tela de preferências
-                  Navigator.pushNamed(context, '/preferencias');
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xFF1E1E1E),
-                  side: const BorderSide(color: Colors.white),
-                ),
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Preferências'),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
                   Navigator.pushNamed(context, '/lido');
                 },
                 style: ElevatedButton.styleFrom(
@@ -233,7 +206,24 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ),
               ),
             ),
-
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sobre');
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF1E1E1E),
+                  side: const BorderSide(color: Colors.white),
+                ),
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Sobre o RecomendaQs'),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             const Text(
               'Configurações da Conta',
@@ -242,110 +232,23 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
-              textAlign: TextAlign.left, // Alinhamento à esquerda
             ),
-
             const SizedBox(height: 10),
-            const Text(
-              'Alterar E-mail',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            // Caixa de texto para alterar e-mail
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  TextField(
-                    onChanged: (text) {
-                      // Falta a logica de alterar email
-                    },
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Alterar E-mail',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: const BorderSide(color: Color(0xFF6F6F6F)),
-                      ),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: const Color(0xFF6F6F6F),
-                      filled: true,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-            const Text(
-              'Alterar Senha',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            // Caixa de texto para alterar senha
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  TextField(
-                    onChanged: (text) {
-                      senha = text;
-                    },
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Alterar Senha',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: const BorderSide(color: Color(0xFF6F6F6F)),
-                      ),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: const Color(0xFF6F6F6F),
-                      filled: true,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-            const Text(
-              'Confirmar Senha',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            // Caixa de texto para confirmar senha
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  TextField(
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Confirmar Senha',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: const BorderSide(color: Color(0xFF6F6F6F)),
-                      ),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: const Color(0xFF6F6F6F),
-                      filled: true,
-                    ),
-                  ),
-                ],
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/configuracoes_conta');
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF1E1E1E),
+                  side: const BorderSide(color: Colors.white),
+                ),
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Configurações da Conta'),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -353,21 +256,6 @@ class _TelaPerfilState extends State<TelaPerfil> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/sobre');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text('Sobre'),
-                    ),
-                  ),
                   const SizedBox(height: 10),
                   // Botão Excluir Conta
                   ElevatedButton(
@@ -375,7 +263,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                       _exibirDialogoConfirmacao();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Cor do botão
+                      backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -392,7 +280,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                       _sairDaConta();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Cor do botão
+                      backgroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
