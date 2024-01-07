@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
@@ -16,34 +17,29 @@ class _HqPageState extends State<HqPage> {
 
   bool favorito = false;
   bool lido = false;
+  String nomeUsuario = '';
 
   TextEditingController _textEditingController = TextEditingController();
-
-  List<Map<String, String>> comentarios = [
-    {
-      'avatar': 'assets/images/icone_perfil.jpg',
-      'name': 'João',
-      'chat': 'Quadrinho top demais',
-      'time': '15:30',
-    },
-    {
-      'avatar': 'assets/images/avatar.jpg',
-      'name': 'Maria',
-      'chat': 'Achei ruim',
-      'time': '15:32',
-    },
-    {
-      'avatar': 'assets/images/avatar2.jpg',
-      'name': 'Pedro',
-      'chat': 'Gostei! massa.',
-      'time': '15:32',
-    },
-  ];
 
   @override
   void initState() {
     super.initState();
     hqData = _carregarDadosHQ(widget.hqDocumentName);
+    _carregarDadosUsuario();
+  }
+
+  Future<void> _carregarDadosUsuario() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        setState(() {
+          nomeUsuario = user.displayName ?? "Nome Padrão";
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
+    }
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> _carregarDadosHQ(
@@ -76,50 +72,193 @@ class _HqPageState extends State<HqPage> {
   }
 
   Widget _itemChats({
-    required String avatar,
     required String name,
     required String chat,
-    required String time,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Avatar(
-            margin: EdgeInsets.only(right: 15),
-            size: 40,
-            image: avatar,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        chat,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                chat,
-                style: TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          Spacer(),
-          Text(
-            time,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
+                if (name == nomeUsuario)
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.edit,
+                          color: Colors.white, // Defina a cor para branca
+                        ),
+                        onPressed: () {
+                          _exibirTelaEdicao(name, chat);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.white, // Defina a cor para branca
+                        ),
+                        onPressed: () {
+                          _exibirConfirmacaoExclusao(name, chat);
+                        },
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _exibirTelaEdicao(String name, String chat) async {
+    TextEditingController _textEditingControllerEdicao =
+        TextEditingController();
+    _textEditingControllerEdicao.text = chat;
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Editar Comentário'),
+          content: TextField(
+            controller: _textEditingControllerEdicao,
+            decoration: InputDecoration(
+              hintText: 'Digite seu comentário...',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o AlertDialog
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o AlertDialog
+                _editarComentario(
+                    name, chat, _textEditingControllerEdicao.text);
+              },
+              child: Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _editarComentario(
+      String name, String chatAntigo, String novoComentario) {
+    FirebaseFirestore.instance
+        .collection('HQs')
+        .doc(widget.hqDocumentName)
+        .get()
+        .then((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        var comentarios =
+            documentSnapshot.get('comentarios') as List<dynamic>? ?? [];
+
+        // Encontra o comentário antigo e o substitui pelo novo
+        for (var comentario in comentarios) {
+          if (comentario['name'] == name && comentario['chat'] == chatAntigo) {
+            comentario['chat'] = novoComentario;
+            break;
+          }
+        }
+
+        // Atualiza os dados no Firebase
+        FirebaseFirestore.instance
+            .collection('HQs')
+            .doc(widget.hqDocumentName)
+            .update({'comentarios': comentarios});
+      }
+    }).catchError((error) {
+      print('Erro ao editar comentário: $error');
+    });
+  }
+
+  void _exibirConfirmacaoExclusao(String name, String chat) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar exclusão'),
+          content: Text('Deseja realmente apagar seu comentário?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o AlertDialog
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o AlertDialog
+                _apagarComentario(name, chat);
+              },
+              child: Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _apagarComentario(String name, String chat) {
+    FirebaseFirestore.instance
+        .collection('HQs')
+        .doc(widget.hqDocumentName)
+        .get()
+        .then((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        var comentarios =
+            documentSnapshot.get('comentarios') as List<dynamic>? ?? [];
+
+        comentarios.removeWhere(
+          (comentario) =>
+              comentario['name'] == name && comentario['chat'] == chat,
+        );
+
+        FirebaseFirestore.instance
+            .collection('HQs')
+            .doc(widget.hqDocumentName)
+            .update({'comentarios': comentarios});
+      }
+    }).catchError((error) {
+      print('Erro ao apagar comentário: $error');
+    });
   }
 
   @override
@@ -139,6 +278,7 @@ class _HqPageState extends State<HqPage> {
           },
         ),
         actions: [
+          // ignore: unnecessary_null_comparison
           if (generos != null && generos.isNotEmpty)
             Expanded(
               child: Center(
@@ -155,6 +295,7 @@ class _HqPageState extends State<HqPage> {
           }
 
           var hqData = snapshot.data!.data()!;
+          // ignore: unused_local_variable
           var generoQuadrinho =
               hqData['generoQuadrinho'] ?? 'Gênero não informado';
           var anosLancamento = (hqData['anoLançamento'] as List<dynamic>?)
@@ -176,8 +317,7 @@ class _HqPageState extends State<HqPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                        height: 40.0), // Adiciona um espaço acima do título
+                    SizedBox(height: 40.0),
                     Text(
                       hqData['nomeQuadrinho'] ?? 'Nome não informado',
                       style: TextStyle(
@@ -221,10 +361,15 @@ class _HqPageState extends State<HqPage> {
                       ],
                     ),
                     Text('Ano(s) de Lançamento: $anosLancamento',
-                        style: TextStyle(color: Colors.white)),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                        )),
                     Text('Resumo: ${hqData['resumo'] ?? 'Não informado'}',
-                        style: TextStyle(color: Colors.white)),
-
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        )),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -299,34 +444,66 @@ class _HqPageState extends State<HqPage> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Container(
-                          color: Colors.white,
-                          child: Column(
-                            children: [
-                              for (var comentario in comentarios)
-                                _itemChats(
-                                  avatar: comentario['avatar']!,
-                                  name: comentario['name']!,
-                                  chat: comentario['chat']!,
-                                  time: comentario['time']!,
+                        StreamBuilder<DocumentSnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('HQs')
+                              .doc(widget.hqDocumentName)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return CircularProgressIndicator();
+                            }
+
+                            var comentarios = snapshot.data!.get('comentarios')
+                                    as List<dynamic>? ??
+                                [];
+
+                            return Container(
+                              color: Colors.white
+                                  .withOpacity(0), // Adicione a opacidade aqui
+                              child: Column(
+                                children: [
+                                  for (var comentario in comentarios)
+                                    _itemChats(
+                                      name: comentario['name'],
+                                      chat: comentario['chat'],
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(height: 15),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _textEditingController,
+                                decoration: InputDecoration(
+                                  hintText: 'Digite seu comentário...',
+                                  border: OutlineInputBorder(),
+                                  fillColor: Colors.white,
+                                  filled: true,
                                 ),
-                            ],
-                          ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                _adicionarComentario();
+                              },
+                              icon: Icon(Icons.send),
+                              label: Text(''),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors
+                                    .transparent, // Defina a cor do fundo como transparente
+                                elevation: 0, // Remova a sombra do botão
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-
-                    SizedBox(height: 15),
-                    TextField(
-                      controller: _textEditingController,
-                      decoration: InputDecoration(
-                        hintText: 'Digite seu comentário...',
-                        border: OutlineInputBorder(),
-                        fillColor: Colors.white,
-                        filled: true,
-                      ),
-                    ),
-                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -336,29 +513,33 @@ class _HqPageState extends State<HqPage> {
       ),
     );
   }
-}
 
-class Avatar extends StatelessWidget {
-  final double size;
-  final dynamic image;
-  final EdgeInsets margin;
+  void _adicionarComentario() {
+    String comentario = _textEditingController.text.trim();
 
-  Avatar({this.image, this.size = 20, this.margin = EdgeInsets.zero});
+    if (comentario.isNotEmpty && nomeUsuario.isNotEmpty) {
+      FirebaseFirestore.instance
+          .collection('HQs')
+          .doc(widget.hqDocumentName)
+          .get()
+          .then((documentSnapshot) {
+        if (documentSnapshot.exists) {
+          var comentarios =
+              documentSnapshot.get('comentarios') as List<dynamic>? ?? [];
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: margin,
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: AssetImage(image),
-        ),
-      ),
-    );
+          comentarios.add({'name': nomeUsuario, 'chat': comentario});
+
+          FirebaseFirestore.instance
+              .collection('HQs')
+              .doc(widget.hqDocumentName)
+              .update({'comentarios': comentarios});
+
+          _textEditingController.clear();
+        }
+      }).catchError((error) {
+        print('Erro ao adicionar comentário: $error');
+      });
+    }
   }
 }
 
