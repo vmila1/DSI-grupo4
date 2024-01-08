@@ -44,31 +44,44 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
             Navigator.pushNamed(context, '/perfil');
           },
         ),
+        backgroundColor:
+            Colors.blue, // Defina a cor desejada para a barra de aplicativos
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildEmailSection(),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                await _startEmailVerificationAndChangeEmail();
-              },
-              child: Text('Alterar E-mail'),
+      body: Stack(
+        children: [
+          // Imagem de Fundo
+          Image.asset(
+            'assets/images/telafundo.png',
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildEmailSection(),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _startEmailVerificationAndChangeEmail();
+                  },
+                  child: Text('Alterar E-mail'),
+                ),
+                SizedBox(height: 64.0),
+                _buildPasswordSection(),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _reauthenticateAndChangePassword();
+                  },
+                  child: Text('Alterar Senha'),
+                ),
+              ],
             ),
-            SizedBox(height: 32.0),
-            _buildPasswordSection(),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                await _reauthenticateAndChangePassword();
-              },
-              child: Text('Alterar Senha'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -102,6 +115,9 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
       decoration: InputDecoration(
         labelText: labelText,
         border: OutlineInputBorder(),
+        filled: true,
+        fillColor:
+            Colors.grey[300], // Defina a cor desejada para a caixa de texto
       ),
     );
   }
