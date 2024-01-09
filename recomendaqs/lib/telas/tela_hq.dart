@@ -36,9 +36,39 @@ class _HqPageState extends State<HqPage> {
         setState(() {
           nomeUsuario = user.displayName ?? "Nome Padrão";
         });
+
+        // Atualiza o nome do usuário nos comentários
+        await _atualizarNomeUsuarioComentarios(user.uid);
       }
     } catch (e) {
       print('Erro ao carregar dados do usuário: $e');
+    }
+  }
+
+  Future<void> _atualizarNomeUsuarioComentarios(String uid) async {
+    try {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('HQs')
+          .doc(widget.hqDocumentName)
+          .get();
+
+      if (snapshot.exists) {
+        var comentarios = snapshot.get('comentarios') as List<dynamic>? ?? [];
+
+        for (var comentario in comentarios) {
+          if (comentario['uid'] == uid) {
+            comentario['name'] = nomeUsuario;
+          }
+        }
+
+        // Atualiza os dados no Firebase
+        await FirebaseFirestore.instance
+            .collection('HQs')
+            .doc(widget.hqDocumentName)
+            .update({'comentarios': comentarios});
+      }
+    } catch (e) {
+      print('Erro ao atualizar nome do usuário nos comentários: $e');
     }
   }
 
@@ -72,9 +102,12 @@ class _HqPageState extends State<HqPage> {
   }
 
   Widget _itemChats({
+    required String uid,
     required String name,
     required String chat,
   }) {
+    bool hasPermission = uid == FirebaseAuth.instance.currentUser?.uid;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Column(
@@ -111,25 +144,25 @@ class _HqPageState extends State<HqPage> {
                     ],
                   ),
                 ),
-                if (name == nomeUsuario)
+                if (hasPermission)
                   Row(
                     children: [
                       IconButton(
                         icon: Icon(
                           Icons.edit,
-                          color: Colors.white, // Defina a cor para branca
+                          color: Colors.white,
                         ),
                         onPressed: () {
-                          _exibirTelaEdicao(name, chat);
+                          _exibirTelaEdicao(uid, name, chat);
                         },
                       ),
                       IconButton(
                         icon: Icon(
                           Icons.delete,
-                          color: Colors.white, // Defina a cor para branca
+                          color: Colors.white,
                         ),
                         onPressed: () {
-                          _exibirConfirmacaoExclusao(name, chat);
+                          _exibirConfirmacaoExclusao(uid, name, chat);
                         },
                       ),
                     ],
@@ -142,7 +175,7 @@ class _HqPageState extends State<HqPage> {
     );
   }
 
-  void _exibirTelaEdicao(String name, String chat) async {
+  void _exibirTelaEdicao(String uid, String name, String chat) async {
     TextEditingController _textEditingControllerEdicao =
         TextEditingController();
     _textEditingControllerEdicao.text = chat;
@@ -169,7 +202,7 @@ class _HqPageState extends State<HqPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o AlertDialog
                 _editarComentario(
-                    name, chat, _textEditingControllerEdicao.text);
+                    uid, name, chat, _textEditingControllerEdicao.text);
               },
               child: Text('Salvar'),
             ),
@@ -180,7 +213,7 @@ class _HqPageState extends State<HqPage> {
   }
 
   void _editarComentario(
-      String name, String chatAntigo, String novoComentario) {
+      String uid, String name, String chatAntigo, String novoComentario) {
     FirebaseFirestore.instance
         .collection('HQs')
         .doc(widget.hqDocumentName)
@@ -192,8 +225,11 @@ class _HqPageState extends State<HqPage> {
 
         // Encontra o comentário antigo e o substitui pelo novo
         for (var comentario in comentarios) {
-          if (comentario['name'] == name && comentario['chat'] == chatAntigo) {
+          if (comentario['uid'] == uid &&
+              comentario['name'] == name &&
+              comentario['chat'] == chatAntigo) {
             comentario['chat'] = novoComentario;
+            comentario['name'] = nomeUsuario; // Atualiza o nome do usuário
             break;
           }
         }
@@ -209,7 +245,7 @@ class _HqPageState extends State<HqPage> {
     });
   }
 
-  void _exibirConfirmacaoExclusao(String name, String chat) {
+  void _exibirConfirmacaoExclusao(String uid, String name, String chat) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -226,7 +262,7 @@ class _HqPageState extends State<HqPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o AlertDialog
-                _apagarComentario(name, chat);
+                _apagarComentario(uid, name, chat);
               },
               child: Text('Confirmar'),
             ),
@@ -236,7 +272,7 @@ class _HqPageState extends State<HqPage> {
     );
   }
 
-  void _apagarComentario(String name, String chat) {
+  void _apagarComentario(String uid, String name, String chat) {
     FirebaseFirestore.instance
         .collection('HQs')
         .doc(widget.hqDocumentName)
@@ -248,7 +284,9 @@ class _HqPageState extends State<HqPage> {
 
         comentarios.removeWhere(
           (comentario) =>
-              comentario['name'] == name && comentario['chat'] == chat,
+              comentario['uid'] == uid &&
+              comentario['name'] == name &&
+              comentario['chat'] == chat,
         );
 
         FirebaseFirestore.instance
@@ -467,6 +505,7 @@ class _HqPageState extends State<HqPage> {
                                     _itemChats(
                                       name: comentario['name'],
                                       chat: comentario['chat'],
+                                      uid: comentario['uid'],
                                     ),
                                 ],
                               ),
@@ -518,6 +557,9 @@ class _HqPageState extends State<HqPage> {
     String comentario = _textEditingController.text.trim();
 
     if (comentario.isNotEmpty && nomeUsuario.isNotEmpty) {
+      User? user = FirebaseAuth.instance.currentUser;
+      String uid = user?.uid ?? ""; // Certifique-se de que uid não seja nulo
+
       FirebaseFirestore.instance
           .collection('HQs')
           .doc(widget.hqDocumentName)
@@ -527,7 +569,8 @@ class _HqPageState extends State<HqPage> {
           var comentarios =
               documentSnapshot.get('comentarios') as List<dynamic>? ?? [];
 
-          comentarios.add({'name': nomeUsuario, 'chat': comentario});
+          comentarios
+              .add({'uid': uid, 'name': nomeUsuario, 'chat': comentario});
 
           FirebaseFirestore.instance
               .collection('HQs')
