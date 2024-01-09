@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
 
-  const HqPage({super.key, required this.hqDocumentName, required String imagemHQ});
+  const HqPage(
+      {super.key, required this.hqDocumentName, required String imagemHQ});
 
   @override
   _HqPageState createState() => _HqPageState();
@@ -13,7 +14,7 @@ class HqPage extends StatefulWidget {
 
 class _HqPageState extends State<HqPage> {
   late Future<DocumentSnapshot<Map<String, dynamic>>> hqData;
-  late List<String> generos;
+  late List<String> generos = [];
 
   bool favorito = false;
   bool lido = false;
@@ -85,10 +86,12 @@ class _HqPageState extends State<HqPage> {
 
       if (user != null) {
         var uid = user.uid;
-        var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+        var userDoc =
+            await FirebaseFirestore.instance.collection('Users').doc(uid).get();
 
         if (userDoc.exists) {
-          var hqsFavoritas = userDoc.get('HQsFavoritas') as List<dynamic>? ?? [];
+          var hqsFavoritas =
+              userDoc.get('HQsFavoritas') as List<dynamic>? ?? [];
 
           // Verifica se o ID da HQ está na lista de favoritos
           if (hqsFavoritas.contains(hqID)) {
@@ -110,7 +113,8 @@ class _HqPageState extends State<HqPage> {
 
       if (user != null) {
         var uid = user.uid;
-        var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+        var userDoc =
+            await FirebaseFirestore.instance.collection('Users').doc(uid).get();
 
         if (userDoc.exists) {
           var hqsLidas = userDoc.get('HQsLidas') as List<dynamic>? ?? [];
@@ -142,7 +146,7 @@ class _HqPageState extends State<HqPage> {
               .toList() ??
           [];
 
-      hqID = hqDocument.id; 
+      hqID = hqDocument.id;
     });
 
     return hqDocument;
@@ -404,6 +408,10 @@ class _HqPageState extends State<HqPage> {
 
   @override
   Widget build(BuildContext context) {
+    String anosLancamento = ''; // Declare a variável no escopo
+    // ignore: unused_local_variable
+    String hqID = ''; // Declare a variável no escopo
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -432,18 +440,19 @@ class _HqPageState extends State<HqPage> {
         future: hqData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return _buildLoadingScreen();
+          }
+
+          if (snapshot.hasError) {
+            return _buildErrorScreen();
           }
 
           var hqData = snapshot.data!.data()!;
-          // ignore: unused_local_variable
-          var generoQuadrinho =
-              hqData['generoQuadrinho'] ?? 'Gênero não informado';
-          var anosLancamento = (hqData['anoLançamento'] as List<dynamic>?)
-                  ?.map((ano) => ano.toString())
-                  .toList()
-                  .join('/') ??
-              'Não informado';
+          // Atualize generos quando os dados estiverem disponíveis
+          generos = (hqData['generoQuadrinho'] as List<dynamic>?)
+                  ?.map((genero) => genero.toString())
+                  .toList() ??
+              [];
 
           return Stack(
             children: [
@@ -520,7 +529,8 @@ class _HqPageState extends State<HqPage> {
                             _marcarComoFavorito();
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: favorito
+                            foregroundColor: Colors.white,
+                            backgroundColor: favorito
                                 ? Colors.red
                                 : const Color.fromARGB(255, 216, 216, 216),
                             shape: RoundedRectangleBorder(
@@ -545,7 +555,8 @@ class _HqPageState extends State<HqPage> {
                             _marcarComoLido();
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: lido
+                            foregroundColor: Colors.white,
+                            backgroundColor: lido
                                 ? Colors.blue
                                 : const Color.fromARGB(255, 216, 216, 216),
                             shape: RoundedRectangleBorder(
@@ -594,8 +605,7 @@ class _HqPageState extends State<HqPage> {
                                 [];
 
                             return Container(
-                              color: Colors.white
-                                  .withOpacity(0),
+                              color: Colors.white.withOpacity(0),
                               child: Column(
                                 children: [
                                   for (var comentario in comentarios)
@@ -631,9 +641,8 @@ class _HqPageState extends State<HqPage> {
                               icon: const Icon(Icons.send),
                               label: const Text(''),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors
-                                    .transparent,
-                                elevation: 0, 
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
                               ),
                             ),
                           ],
@@ -646,6 +655,46 @@ class _HqPageState extends State<HqPage> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLoadingScreen() {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        title: Text('Carregando...'),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/telafundo.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorScreen() {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        title: Text('Erro'),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/telafundo.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Text('Erro ao carregar os dados da HQ.'),
+        ),
       ),
     );
   }
