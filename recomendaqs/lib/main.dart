@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         '/cadastro': (context) => const CadastroPage(),
         '/perfil': (context) => const TelaPerfil(),
         '/favoritos': (context) => const FavoritoPage(),
-        '/hq': (context) => HqPage(
+        '/hq': (context) => const HqPage(
               imagemHQ: '',
               hqDocumentName: '',
             ),

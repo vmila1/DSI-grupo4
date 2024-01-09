@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override
@@ -42,7 +43,7 @@ class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController confirmSenhaController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   String? nomeUsuario;
 
@@ -55,6 +56,13 @@ class _CadastroPageState extends State<CadastroPage> {
       );
 
       User? user = userCredential.user;
+
+      // Criar o documento na coleção "Users" com o UID do usuário
+      await FirebaseFirestore.instance.collection('Users').doc(user?.uid).set({
+        'HQsLidas': <String>[],
+        'HQsFavoritas': <String>[],
+        'UserHistorico': <String>[],
+      });
 
       // Defina o nome de exibição
       await user?.updateProfile(displayName: usernameController.text);
@@ -79,7 +87,7 @@ class _CadastroPageState extends State<CadastroPage> {
       if (e.code == "email-already-in-use") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('O e-mail já está cadastrado.'),
+            content: const Text('O e-mail já está cadastrado.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
             shape: const RoundedRectangleBorder(
@@ -128,6 +136,7 @@ class _CadastroPageState extends State<CadastroPage> {
               color: const Color(0xFF5653FF),
             ),
           ),
+          
           // Imagem sobrepondo a onda
           Positioned(
             top: 20,
@@ -135,8 +144,8 @@ class _CadastroPageState extends State<CadastroPage> {
             right: 0,
             child: Image.asset(
               'assets/images/recomendaqs.png',
-              height: 80, // Ajuste conforme necessário
-              width: 160, // Ajuste conforme necessário
+              height: 80, 
+              width: 160, 
               fit: BoxFit.contain,
             ),
           ),
@@ -190,7 +199,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         await _cadastrarUsuario();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text(
                               'Por favor, corrija os campos destacados.',
                             ),

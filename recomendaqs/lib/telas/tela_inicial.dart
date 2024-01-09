@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao carregar dados do usuário: $e');
     }
   }
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: Text(
           'Olá, $nomeUsuario',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
         ),
@@ -70,11 +71,11 @@ class _HomePageState extends State<HomePage> {
             height: double.infinity,
             width: double.infinity,
           ),
-          SingleChildScrollView(
+          const SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'HQs Favoritas:',
@@ -86,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 ListaHQsFavoritasFirestore(),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Recomendações:',
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 ListaRecomendacoesFirestore(),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Populares no momento:',
@@ -110,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 ListaPopularesFirestore(),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Lançamentos:',
@@ -170,51 +171,63 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ListaHQsFavoritasFirestore extends StatelessWidget {
+  const ListaHQsFavoritasFirestore({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 195,
-      child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
+      child: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
 
-          var hqs = snapshot.data!.docs;
+          var data = snapshot.data!.data() as Map<String, dynamic>;
+          var hqsFavoritas = List<String>.from(data['HQsFavoritas'] ?? []);
 
           List<Widget> hqWidgets = [];
-          for (var hq in hqs) {
-            var hqData = hq.data() as Map<String, dynamic>;
-            var imagemHQ = hqData['imagem'];
-            var nomeDocumento = hq.id;
+          for (var hqDocumentName in hqsFavoritas) {
+            hqWidgets.add(
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance.collection('HQs').doc(hqDocumentName).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
+                  }
 
-            if (imagemHQ != null) {
-              hqWidgets.add(
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HqPage(
-                          hqDocumentName: nomeDocumento,
-                          imagemHQ: '',
+                  var hqData = snapshot.data!.data() as Map<String, dynamic>;
+                  var imagemHQ = hqData['imagem'] as String;
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HqPage(
+                            hqDocumentName: hqDocumentName,
+                            imagemHQ: imagemHQ,
+                          ),
                         ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        imagemHQ,
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: 115,
                       ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                      imagemHQ,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: 115,
                     ),
-                  ),
-                ),
-              );
-            }
+                  );
+                },
+              ),
+            );
           }
 
           return ListView(
@@ -228,6 +241,8 @@ class ListaHQsFavoritasFirestore extends StatelessWidget {
 }
 
 class ListaRecomendacoesFirestore extends StatelessWidget {
+  const ListaRecomendacoesFirestore({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -236,7 +251,7 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
 
           var recomendacoes = snapshot.data!.docs
@@ -289,6 +304,8 @@ class ListaRecomendacoesFirestore extends StatelessWidget {
 }
 
 class ListaPopularesFirestore extends StatelessWidget {
+  const ListaPopularesFirestore({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -297,7 +314,7 @@ class ListaPopularesFirestore extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('HQs').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
 
           var populares = snapshot.data!.docs
@@ -349,6 +366,8 @@ class ListaPopularesFirestore extends StatelessWidget {
 }
 
 class ListaLancamentosFirestore extends StatelessWidget {
+  const ListaLancamentosFirestore({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -360,7 +379,7 @@ class ListaLancamentosFirestore extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
 
           var lancamentos = snapshot.data!.docs

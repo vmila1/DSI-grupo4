@@ -14,7 +14,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
       TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   User? _currentUser;
 
   @override
@@ -37,15 +37,15 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Configurações da Conta'),
+        title: const Text('Configurações da Conta'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushNamed(context, '/perfil');
           },
         ),
         backgroundColor:
-            Colors.blue, // Defina a cor desejada para a barra de aplicativos
+            Colors.blue, // Cor da barra de aplicativos
       ),
       body: Stack(
         children: [
@@ -62,21 +62,21 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildEmailSection(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
                     await _startEmailVerificationAndChangeEmail();
                   },
-                  child: Text('Alterar E-mail'),
+                  child: const Text('Alterar E-mail'),
                 ),
-                SizedBox(height: 64.0),
+                const SizedBox(height: 64.0),
                 _buildPasswordSection(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
                     await _reauthenticateAndChangePassword();
                   },
-                  child: Text('Alterar Senha'),
+                  child: const Text('Alterar Senha'),
                 ),
               ],
             ),
@@ -91,7 +91,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildTextField('Novo E-mail', emailController),
-        SizedBox(height: 16.0),
+        const SizedBox(height: 16.0),
         _buildTextField('Senha Atual', currentPasswordController),
       ],
     );
@@ -102,7 +102,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildTextField('Senha Atual', currentPasswordController),
-        SizedBox(height: 16.0),
+        const SizedBox(height: 16.0),
         _buildTextField('Nova Senha', newPasswordController),
       ],
     );
@@ -114,7 +114,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
       obscureText: labelText.contains('Senha'),
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
         filled: true,
         fillColor:
             Colors.grey[300], // Defina a cor desejada para a caixa de texto
@@ -140,32 +140,35 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
         await _currentUser!.sendEmailVerification();
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
                 'E-mail de verificação enviado. Por favor, verifique seu e-mail antes de continuar.'),
             backgroundColor: Colors.yellow,
           ),
         );
 
-        // Adicione um atraso antes de verificar o status da verificação de e-mail
-        await Future.delayed(Duration(seconds: 15));
+        // Atraso antes de verificar o status da verificação de e-mail
+        await Future.delayed(const Duration(seconds: 15));
 
         // Recarrega o usuário para obter o status de verificação de e-mail atualizado
         await _currentUser!.reload();
 
         if (_currentUser!.emailVerified) {
           _loadUserData();
+          // ignore: avoid_print
           print('Alteração de e-mail concluída com sucesso.');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Alteração de e-mail concluída com sucesso.'),
               backgroundColor: Colors.green,
             ),
           );
         } else {
+          // ignore: avoid_print
           print('O novo e-mail ainda não foi verificado.');
         }
       } catch (error) {
+        // ignore: avoid_print
         print('Erro ao iniciar a alteração de e-mail: $error');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -191,17 +194,19 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
         await _currentUser!.updatePassword(newPasswordController.text);
 
         _loadUserData();
+        // ignore: avoid_print
         print('Senha redefinida com sucesso!');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Senha redefinida com sucesso!'),
             backgroundColor: Colors.green,
           ),
         );
       } catch (error) {
+        // ignore: avoid_print
         print('Erro ao reautenticar ou redefinir a senha: $error');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Erro ao redefinir a senha'),
             backgroundColor: Colors.red,
           ),

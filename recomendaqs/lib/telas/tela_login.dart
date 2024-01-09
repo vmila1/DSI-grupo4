@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController senhaController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   String? nomeUsuario;
 
@@ -76,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacementNamed(context, '/inicial');
     } on FirebaseAuthException catch (e) {
+      // ignore: avoid_print
       print('Erro durante o login: $e');
       setState(() {
         loginError = true;
@@ -129,14 +130,14 @@ class _LoginPageState extends State<LoginPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Falha no Login'),
+              title: const Text('Falha no Login'),
               content: Text(errorMessage),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -257,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                         _realizarLogin();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text(
                                 'Por favor, corrija os campos destacados.'),
                           ),

@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
 
-  HqPage({required this.hqDocumentName, required String imagemHQ});
+  const HqPage({super.key, required this.hqDocumentName, required String imagemHQ});
 
   @override
   _HqPageState createState() => _HqPageState();
@@ -18,8 +18,9 @@ class _HqPageState extends State<HqPage> {
   bool favorito = false;
   bool lido = false;
   String nomeUsuario = '';
+  String hqID = '';
 
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -39,8 +40,13 @@ class _HqPageState extends State<HqPage> {
 
         // Atualiza o nome do usuário nos comentários
         await _atualizarNomeUsuarioComentarios(user.uid);
+
+        await _verificarFavorito();
+
+        await _verificarLido();
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao carregar dados do usuário: $e');
     }
   }
@@ -68,7 +74,58 @@ class _HqPageState extends State<HqPage> {
             .update({'comentarios': comentarios});
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao atualizar nome do usuário nos comentários: $e');
+    }
+  }
+
+  Future<void> _verificarFavorito() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        var uid = user.uid;
+        var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+
+        if (userDoc.exists) {
+          var hqsFavoritas = userDoc.get('HQsFavoritas') as List<dynamic>? ?? [];
+
+          // Verifica se o ID da HQ está na lista de favoritos
+          if (hqsFavoritas.contains(hqID)) {
+            setState(() {
+              favorito = true;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Erro ao verificar favorito: $e');
+    }
+  }
+
+  Future<void> _verificarLido() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        var uid = user.uid;
+        var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+
+        if (userDoc.exists) {
+          var hqsLidas = userDoc.get('HQsLidas') as List<dynamic>? ?? [];
+
+          // Verifica se o ID da HQ está na lista de HQs lidas
+          if (hqsLidas.contains(hqID)) {
+            setState(() {
+              lido = true;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Erro ao verificar lido: $e');
     }
   }
 
@@ -84,6 +141,8 @@ class _HqPageState extends State<HqPage> {
               ?.map((genero) => genero.toString())
               .toList() ??
           [];
+
+      hqID = hqDocument.id; 
     });
 
     return hqDocument;
@@ -93,12 +152,54 @@ class _HqPageState extends State<HqPage> {
     setState(() {
       favorito = !favorito;
     });
+
+    // Adiciona ou remove o ID da HQ na lista de favoritos do usuário
+    _atualizarListaUsuarios(favorito, 'HQsFavoritas', hqID);
   }
 
   void _marcarComoLido() {
     setState(() {
       lido = !lido;
     });
+
+    // Adicione ou remove o ID da HQ à lista de HQs lidas do usuário
+    _atualizarListaUsuarios(lido, 'HQsLidas', hqID);
+  }
+
+  void _atualizarListaUsuarios(bool adicionar, String campo, String hqID) {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      var uid = user.uid;
+
+      FirebaseFirestore.instance
+          .collection('Users')
+          .doc(uid)
+          .get()
+          .then((documentSnapshot) {
+        if (documentSnapshot.exists) {
+          var dadosUsuario = documentSnapshot.data() as Map<String, dynamic>;
+          var lista = List<String>.from(dadosUsuario[campo] ?? []);
+
+          if (adicionar) {
+            // Adiciona o ID da HQ à lista
+            lista.add(hqID);
+          } else {
+            // Remove o ID da HQ da lista
+            lista.remove(hqID);
+          }
+
+          // Atualiza a lista no Firebase
+          FirebaseFirestore.instance
+              .collection('Users')
+              .doc(uid)
+              .update({campo: lista});
+        }
+      }).catchError((error) {
+        // ignore: avoid_print
+        print('Erro ao atualizar lista do usuário: $error');
+      });
+    }
   }
 
   Widget _itemChats({
@@ -114,7 +215,7 @@ class _HqPageState extends State<HqPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8.0),
@@ -127,16 +228,16 @@ class _HqPageState extends State<HqPage> {
                     children: [
                       Text(
                         name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         chat,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.white,
                         ),
@@ -148,7 +249,7 @@ class _HqPageState extends State<HqPage> {
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.edit,
                           color: Colors.white,
                         ),
@@ -157,7 +258,7 @@ class _HqPageState extends State<HqPage> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           color: Colors.white,
                         ),
@@ -184,10 +285,10 @@ class _HqPageState extends State<HqPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Editar Comentário'),
+          title: const Text('Editar Comentário'),
           content: TextField(
             controller: _textEditingControllerEdicao,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Digite seu comentário...',
             ),
           ),
@@ -196,7 +297,7 @@ class _HqPageState extends State<HqPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o AlertDialog
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
@@ -204,7 +305,7 @@ class _HqPageState extends State<HqPage> {
                 _editarComentario(
                     uid, name, chat, _textEditingControllerEdicao.text);
               },
-              child: Text('Salvar'),
+              child: const Text('Salvar'),
             ),
           ],
         );
@@ -241,6 +342,7 @@ class _HqPageState extends State<HqPage> {
             .update({'comentarios': comentarios});
       }
     }).catchError((error) {
+      // ignore: avoid_print
       print('Erro ao editar comentário: $error');
     });
   }
@@ -250,21 +352,21 @@ class _HqPageState extends State<HqPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmar exclusão'),
-          content: Text('Deseja realmente apagar seu comentário?'),
+          title: const Text('Confirmar exclusão'),
+          content: const Text('Deseja realmente apagar seu comentário?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o AlertDialog
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o AlertDialog
                 _apagarComentario(uid, name, chat);
               },
-              child: Text('Confirmar'),
+              child: const Text('Confirmar'),
             ),
           ],
         );
@@ -295,6 +397,7 @@ class _HqPageState extends State<HqPage> {
             .update({'comentarios': comentarios});
       }
     }).catchError((error) {
+      // ignore: avoid_print
       print('Erro ao apagar comentário: $error');
     });
   }
@@ -307,7 +410,7 @@ class _HqPageState extends State<HqPage> {
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -329,7 +432,7 @@ class _HqPageState extends State<HqPage> {
         future: hqData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           var hqData = snapshot.data!.data()!;
@@ -351,46 +454,46 @@ class _HqPageState extends State<HqPage> {
                 width: double.infinity,
               ),
               SingleChildScrollView(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 40.0),
+                    const SizedBox(height: 40.0),
                     Text(
                       hqData['nomeQuadrinho'] ?? 'Nome não informado',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Image.network(
                       hqData['imagem'] ?? '',
                       fit: BoxFit.contain,
                       height: 400,
                       width: 400,
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.star, color: Colors.yellow),
-                        SizedBox(width: 5),
+                        const Icon(Icons.star, color: Colors.yellow),
+                        const SizedBox(width: 5),
                         Text(
                           '${hqData['avaliacao'] ?? 'Não avaliado'}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 60),
-                        Icon(Icons.attach_money, color: Colors.green),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 60),
+                        const Icon(Icons.attach_money, color: Colors.green),
+                        const SizedBox(width: 5),
                         Text(
                           '${hqData['preco'] ?? 'Não informado'}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -399,30 +502,27 @@ class _HqPageState extends State<HqPage> {
                       ],
                     ),
                     Text('Ano(s) de Lançamento: $anosLancamento',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                         )),
                     Text('Resumo: ${hqData['resumo'] ?? 'Não informado'}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                         )),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton.icon(
                           onPressed: () {
-                            setState(() {
-                              favorito = !favorito;
-                            });
+                            _marcarComoFavorito();
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: favorito
+                            foregroundColor: Colors.white, backgroundColor: favorito
                                 ? Colors.red
                                 : const Color.fromARGB(255, 216, 216, 216),
-                            onPrimary: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -433,24 +533,21 @@ class _HqPageState extends State<HqPage> {
                           ),
                           label: Text(
                             favorito ? 'Favoritado' : 'Favoritar',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
-                              color: const Color.fromARGB(255, 65, 64, 64),
+                              color: Color.fromARGB(255, 65, 64, 64),
                             ),
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         ElevatedButton.icon(
                           onPressed: () {
-                            setState(() {
-                              lido = !lido;
-                            });
+                            _marcarComoLido();
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: lido
+                            foregroundColor: Colors.white, backgroundColor: lido
                                 ? Colors.blue
                                 : const Color.fromARGB(255, 216, 216, 216),
-                            onPrimary: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -461,19 +558,19 @@ class _HqPageState extends State<HqPage> {
                           ),
                           label: Text(
                             lido ? 'Lido' : 'Marcar como lido',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
-                              color: const Color.fromARGB(255, 65, 64, 64),
+                              color: Color.fromARGB(255, 65, 64, 64),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Comentários:',
                           style: TextStyle(
                             fontSize: 20,
@@ -481,7 +578,7 @@ class _HqPageState extends State<HqPage> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         StreamBuilder<DocumentSnapshot>(
                           stream: FirebaseFirestore.instance
                               .collection('HQs')
@@ -489,7 +586,7 @@ class _HqPageState extends State<HqPage> {
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
-                              return CircularProgressIndicator();
+                              return const CircularProgressIndicator();
                             }
 
                             var comentarios = snapshot.data!.get('comentarios')
@@ -498,7 +595,7 @@ class _HqPageState extends State<HqPage> {
 
                             return Container(
                               color: Colors.white
-                                  .withOpacity(0), // Adicione a opacidade aqui
+                                  .withOpacity(0),
                               child: Column(
                                 children: [
                                   for (var comentario in comentarios)
@@ -512,13 +609,13 @@ class _HqPageState extends State<HqPage> {
                             );
                           },
                         ),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         Row(
                           children: [
                             Expanded(
                               child: TextField(
                                 controller: _textEditingController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   hintText: 'Digite seu comentário...',
                                   border: OutlineInputBorder(),
                                   fillColor: Colors.white,
@@ -526,17 +623,17 @@ class _HqPageState extends State<HqPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             ElevatedButton.icon(
                               onPressed: () {
                                 _adicionarComentario();
                               },
-                              icon: Icon(Icons.send),
-                              label: Text(''),
+                              icon: const Icon(Icons.send),
+                              label: const Text(''),
                               style: ElevatedButton.styleFrom(
-                                primary: Colors
-                                    .transparent, // Defina a cor do fundo como transparente
-                                elevation: 0, // Remova a sombra do botão
+                                backgroundColor: Colors
+                                    .transparent,
+                                elevation: 0, 
                               ),
                             ),
                           ],
@@ -580,6 +677,7 @@ class _HqPageState extends State<HqPage> {
           _textEditingController.clear();
         }
       }).catchError((error) {
+        // ignore: avoid_print
         print('Erro ao adicionar comentário: $error');
       });
     }
@@ -589,12 +687,12 @@ class _HqPageState extends State<HqPage> {
 class GeneroWidget extends StatelessWidget {
   final List<String> generos;
 
-  GeneroWidget({required this.generos});
+  const GeneroWidget({super.key, required this.generos});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(86, 83, 255, 1),
         borderRadius: BorderRadius.circular(12.0),
@@ -609,13 +707,13 @@ class GeneroWidget extends StatelessWidget {
               child: Chip(
                 label: Text(
                   genero,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18.0,
                   ),
                 ),
                 backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-                shape: StadiumBorder(),
+                shape: const StadiumBorder(),
               ),
             );
           }).toList(),

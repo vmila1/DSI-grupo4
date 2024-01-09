@@ -14,7 +14,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
   String imagemUsuario = "assets/images/icone_perfil.jpg";
   int paginaAtual = 2;
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -32,6 +32,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
         });
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao carregar dados do usuário: $e');
     }
   }
@@ -42,12 +43,12 @@ class _TelaPerfilState extends State<TelaPerfil> {
       builder: (BuildContext context) {
         String novoNome = nomeUsuario ?? '';
         return AlertDialog(
-          title: Text('Editar Nome'),
+          title: const Text('Editar Nome'),
           content: TextField(
             onChanged: (text) {
               novoNome = text;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Novo Nome',
             ),
           ),
@@ -56,14 +57,14 @@ class _TelaPerfilState extends State<TelaPerfil> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _atualizarNomeUsuario(novoNome);
               },
-              child: Text('Salvar'),
+              child: const Text('Salvar'),
             ),
           ],
         );
@@ -80,6 +81,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
         _carregarDadosUsuario();
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao atualizar nome do usuário: $e');
     }
   }
@@ -89,22 +91,22 @@ class _TelaPerfilState extends State<TelaPerfil> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmar Exclusão'),
-          content: Text(
+          title: const Text('Confirmar Exclusão'),
+          content: const Text(
               'Tem certeza de que deseja excluir sua conta? Esta ação é irreversível.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _excluirConta();
               },
-              child: Text('Confirmar'),
+              child: const Text('Confirmar'),
             ),
           ],
         );
@@ -117,6 +119,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
       await _firebaseAuth.currentUser?.delete();
       Navigator.pushNamed(context, '/login');
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao excluir a conta: $e');
     }
   }
@@ -268,8 +271,8 @@ class _TelaPerfilState extends State<TelaPerfil> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
                       child: Text('Excluir Conta'),
                     ),
                   ),
@@ -285,8 +288,8 @@ class _TelaPerfilState extends State<TelaPerfil> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
                       child: Text('Sair da Conta'),
                     ),
                   ),
