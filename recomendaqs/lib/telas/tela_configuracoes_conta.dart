@@ -13,6 +13,8 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
   final TextEditingController currentPasswordController =
       TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmNewPasswordController =
+      TextEditingController();
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   User? _currentUser;
@@ -44,12 +46,10 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
             Navigator.pushNamed(context, '/perfil');
           },
         ),
-        backgroundColor:
-            Colors.blue, // Cor da barra de aplicativos
+        backgroundColor: Colors.blue,
       ),
       body: Stack(
         children: [
-          // Imagem de Fundo
           Image.asset(
             'assets/images/telafundo.png',
             fit: BoxFit.cover,
@@ -104,6 +104,8 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
         _buildTextField('Senha Atual', currentPasswordController),
         const SizedBox(height: 16.0),
         _buildTextField('Nova Senha', newPasswordController),
+        const SizedBox(height: 16.0),
+        _buildTextField('Confirmar Nova Senha', confirmNewPasswordController),
       ],
     );
   }
@@ -116,8 +118,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
         labelText: labelText,
         border: const OutlineInputBorder(),
         filled: true,
-        fillColor:
-            Colors.grey[300], // Defina a cor desejada para a caixa de texto
+        fillColor: Colors.grey[300],
       ),
     );
   }
@@ -125,6 +126,27 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
   Future<void> _startEmailVerificationAndChangeEmail() async {
     if (_currentUser != null) {
       try {
+        // Validações de e-mail e senha
+        if (!isValidEmail(emailController.text)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Por favor, forneça um e-mail válido.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!isValidPassword(currentPasswordController.text)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Senha atual inválida.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         // Solicita que o usuário digite novamente sua senha para reautenticação
         String senha = currentPasswordController.text;
         AuthCredential credencial = EmailAuthProvider.credential(
@@ -168,8 +190,22 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
           print('O novo e-mail ainda não foi verificado.');
         }
       } catch (error) {
-        // ignore: avoid_print
-        print('Erro ao iniciar a alteração de e-mail: $error');
+        // Verifica o tipo de erro
+        if (error is FirebaseAuthException) {
+          // Exibe uma mensagem específica para o erro de senha incorreta
+          if (error.code == 'wrong-password') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content:
+                    Text('Senha atual incorreta. Por favor, tente novamente.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+        }
+
+        // Exibe uma mensagem genérica para outros erros
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao iniciar a alteração de e-mail: $error'),
@@ -183,6 +219,39 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
   Future<void> _reauthenticateAndChangePassword() async {
     if (_currentUser != null) {
       try {
+        // Validação de senha
+        if (!isValidPassword(currentPasswordController.text)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Senha atual inválida.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!isValidPassword(newPasswordController.text)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Por favor, forneça uma nova senha válida (mínimo 6 caracteres).'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (newPasswordController.text != confirmNewPasswordController.text) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'As senhas da nova senha e confirmar senha não coincidem.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         // Reautenticar usuário com as credenciais atuais
         AuthCredential credential = EmailAuthProvider.credential(
           email: _currentUser!.email!,
@@ -203,8 +272,22 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
           ),
         );
       } catch (error) {
-        // ignore: avoid_print
-        print('Erro ao reautenticar ou redefinir a senha: $error');
+        // Verifica o tipo de erro
+        if (error is FirebaseAuthException) {
+          // Exibe uma mensagem específica para o erro de senha incorreta
+          if (error.code == 'wrong-password') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content:
+                    Text('Senha atual incorreta. Por favor, tente novamente.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+        }
+
+        // Exibe uma mensagem genérica para outros erros
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Erro ao redefinir a senha'),
@@ -213,5 +296,16 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
         );
       }
     }
+  }
+
+  bool isValidEmail(String email) {
+    return email != null &&
+        email.isNotEmpty &&
+        email.contains('@') &&
+        email.length >= 6;
+  }
+
+  bool isValidPassword(String password) {
+    return password != null && password.isNotEmpty && password.length >= 6;
   }
 }
