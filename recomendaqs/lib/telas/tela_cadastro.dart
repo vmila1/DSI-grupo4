@@ -47,6 +47,11 @@ class _CadastroPageState extends State<CadastroPage> {
 
   String? nomeUsuario;
 
+  String? errorUsername;
+  String? errorEmail;
+  String? errorSenha;
+  String? errorConfirmSenha;
+
   Future<void> _cadastrarUsuario() async {
     try {
       UserCredential userCredential =
@@ -57,14 +62,12 @@ class _CadastroPageState extends State<CadastroPage> {
 
       User? user = userCredential.user;
 
-      // Criar o documento na coleção "Users" com o UID do usuário
       await FirebaseFirestore.instance.collection('Users').doc(user?.uid).set({
         'HQsLidas': <String>[],
         'HQsFavoritas': <String>[],
         'UserHistorico': <String>[],
       });
 
-      // Defina o nome de exibição
       await user?.updateProfile(displayName: usernameController.text);
 
       setState(() {
@@ -136,16 +139,14 @@ class _CadastroPageState extends State<CadastroPage> {
               color: const Color(0xFF5653FF),
             ),
           ),
-          
-          // Imagem sobrepondo a onda
           Positioned(
             top: 20,
             left: 0,
             right: 0,
             child: Image.asset(
               'assets/images/recomendaqs.png',
-              height: 80, 
-              width: 160, 
+              height: 80,
+              width: 160,
               fit: BoxFit.contain,
             ),
           ),
@@ -169,28 +170,52 @@ class _CadastroPageState extends State<CadastroPage> {
                   _buildTextField(
                     labelText: 'Nome de Usuário',
                     controller: usernameController,
-                    validator: (value) => _validateUsername(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorUsername = _validateUsername(value!);
+                      });
+                    },
+                    errorText: errorUsername,
                   ),
                   const SizedBox(height: 10),
                   _buildTextField(
                     labelText: 'Email',
                     controller: emailController,
-                    validator: (value) => _validateEmail(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorEmail = _validateEmail(value!);
+                      });
+                    },
                     keyboardType: TextInputType.emailAddress,
+                    errorText: errorEmail,
                   ),
                   const SizedBox(height: 10),
                   _buildTextField(
                     labelText: 'Senha',
                     controller: senhaController,
-                    validator: (value) => _validateSenha(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorSenha = _validateSenha(value!);
+                      });
+                    },
                     obscureText: true,
+                    errorText: errorSenha,
                   ),
                   const SizedBox(height: 10),
                   _buildTextField(
                     labelText: 'Confirme sua Senha',
                     controller: confirmSenhaController,
-                    validator: (value) => _validateConfirmSenha(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorConfirmSenha = _validateConfirmSenha(value!);
+                      });
+                    },
                     obscureText: true,
+                    errorText: errorConfirmSenha,
                   ),
                   const SizedBox(height: 15),
                   ElevatedButton(
@@ -199,10 +224,12 @@ class _CadastroPageState extends State<CadastroPage> {
                         await _cadastrarUsuario();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(
                               'Por favor, corrija os campos destacados.',
+                              style: TextStyle(color: Colors.white),
                             ),
+                            backgroundColor: Colors.red,
                           ),
                         );
                       }
@@ -213,7 +240,7 @@ class _CadastroPageState extends State<CadastroPage> {
                     ),
                     child: const Text(
                       'Cadastrar',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -254,6 +281,7 @@ class _CadastroPageState extends State<CadastroPage> {
     required String? Function(String?) validator,
     bool obscureText = false,
     TextInputType? keyboardType,
+    String? errorText,
   }) {
     return TextFormField(
       controller: controller,
@@ -269,6 +297,7 @@ class _CadastroPageState extends State<CadastroPage> {
         labelStyle: const TextStyle(color: Color.fromARGB(255, 95, 95, 95)),
         fillColor: Colors.white,
         filled: true,
+        errorText: errorText,
       ),
     );
   }

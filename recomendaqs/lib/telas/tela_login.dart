@@ -260,7 +260,8 @@ class _LoginPageState extends State<LoginPage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                                'Por favor, corrija os campos destacados.'),
+                              'Por favor, corrija os campos destacados.',
+                            ),
                           ),
                         );
                       }
@@ -271,7 +272,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: const Text(
                       'Entrar',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white), // Set text color to white
                     ),
                   ),
                   const SizedBox(height: 40),

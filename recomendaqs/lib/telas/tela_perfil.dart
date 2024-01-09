@@ -273,10 +273,14 @@ class _TelaPerfilState extends State<TelaPerfil> {
                     ),
                     child: const Padding(
                       padding: EdgeInsets.all(10.0),
-                      child: Text('Excluir Conta'),
+                      child: Text(
+                        'Excluir Conta',
+                        style: TextStyle(
+                            color: Colors.white), // Mudança da cor do texto
+                      ),
                     ),
                   ),
-
+                  const SizedBox(height: 20), // Espaço entre os botões
                   // Botão Sair da Conta
                   ElevatedButton(
                     onPressed: () {
@@ -290,7 +294,11 @@ class _TelaPerfilState extends State<TelaPerfil> {
                     ),
                     child: const Padding(
                       padding: EdgeInsets.all(10.0),
-                      child: Text('Sair da Conta'),
+                      child: Text(
+                        'Sair da Conta',
+                        style: TextStyle(
+                            color: Colors.white), // Mudança da cor do texto
+                      ),
                     ),
                   ),
                 ],
