@@ -1,15 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recomendaqs/telas/tela_hq.dart';
 
 class LidoPage extends StatefulWidget {
   const LidoPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LidoPageState createState() => _LidoPageState();
 }
 
 class _LidoPageState extends State<LidoPage> {
-  int totalImagens = 9;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late User _user;
+  late List<String> hqsLidas;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = _auth.currentUser!;
+    _loadHqsLidas();
+  }
+
+  Future<void> _loadHqsLidas() async {
+    final DocumentSnapshot<Map<String, dynamic>> userDoc =
+        await FirebaseFirestore.instance.collection('Users').doc(_user.uid).get();
+
+    if (userDoc.exists) {
+      final data = userDoc.data()!;
+      setState(() {
+        hqsLidas = List<String>.from(data['HQsLidas'] ?? []);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +49,12 @@ class _LidoPageState extends State<LidoPage> {
             height: double.infinity,
             width: double.infinity,
           ),
-          const ImagensHQ(),
+          hqsLidas.isNotEmpty
+              ? ImagensHQ(hqsLidas: hqsLidas)
+              : const Center(
+                  // Mostra a mensagem quando não há HQs lidas
+                  child: Text('Sem HQs marcadas como Lidas'),
+                ),
         ],
       ),
     );
@@ -34,7 +62,9 @@ class _LidoPageState extends State<LidoPage> {
 }
 
 class ImagensHQ extends StatelessWidget {
-  const ImagensHQ({super.key});
+  final List<String> hqsLidas;
+
+  const ImagensHQ({super.key, required this.hqsLidas});
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +73,44 @@ class ImagensHQ extends StatelessWidget {
         crossAxisCount: 3,
         childAspectRatio: 100 / 150,
       ),
-      itemCount: 9,
+      itemCount: hqsLidas.length,
       padding: const EdgeInsets.all(10.0),
       itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Image.asset(
-            'assets/images/imagemhq.jpg',
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-          ),
+        var hqDocumentName = hqsLidas[index];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance.collection('HQs').doc(hqDocumentName).snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            var hqData = snapshot.data!.data() as Map<String, dynamic>;
+            var imagemHQ = hqData['imagem'] as String;
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HqPage(
+                      hqDocumentName: hqDocumentName,
+                      imagemHQ: imagemHQ,
+                    ),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Image.network(
+                  imagemHQ,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                ),
+              ),
+            );
+          },
         );
       },
     );

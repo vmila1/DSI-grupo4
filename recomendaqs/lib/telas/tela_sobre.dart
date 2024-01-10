@@ -8,13 +8,13 @@ class TelaSobre extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: Text(
+        title: const Text(
           'Sobre o RecomendaQs',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushNamed(context, '/perfil');
           },
@@ -39,8 +39,8 @@ class TelaSobre extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+          const SingleChildScrollView(
+            padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

@@ -35,8 +35,8 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: const Text(''),
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: <Widget>[],
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: const <Widget>[],
       ),
       body: Stack(
         children: [
@@ -53,16 +53,16 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16.0),
-                  Text(
+                  const Text(
                     'O que você deseja?',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  TextField(
+                  const TextField(
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -70,9 +70,9 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                     ),
                   ),
                   const SizedBox(height: 24.0),
-                  Text(
+                  const Text(
                     'Histórico de Busca',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

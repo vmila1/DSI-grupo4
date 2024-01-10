@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override
@@ -42,9 +43,14 @@ class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController confirmSenhaController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   String? nomeUsuario;
+
+  String? errorUsername;
+  String? errorEmail;
+  String? errorSenha;
+  String? errorConfirmSenha;
 
   Future<void> _cadastrarUsuario() async {
     try {
@@ -56,7 +62,12 @@ class _CadastroPageState extends State<CadastroPage> {
 
       User? user = userCredential.user;
 
-      // Defina o nome de exibição
+      await FirebaseFirestore.instance.collection('Users').doc(user?.uid).set({
+        'HQsLidas': <String>[],
+        'HQsFavoritas': <String>[],
+        'UserHistorico': <String>[],
+      });
+
       await user?.updateProfile(displayName: usernameController.text);
 
       setState(() {
@@ -79,7 +90,7 @@ class _CadastroPageState extends State<CadastroPage> {
       if (e.code == "email-already-in-use") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('O e-mail já está cadastrado.'),
+            content: const Text('O e-mail já está cadastrado.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
             shape: const RoundedRectangleBorder(
@@ -128,15 +139,14 @@ class _CadastroPageState extends State<CadastroPage> {
               color: const Color(0xFF5653FF),
             ),
           ),
-          // Imagem sobrepondo a onda
           Positioned(
             top: 20,
             left: 0,
             right: 0,
             child: Image.asset(
               'assets/images/recomendaqs.png',
-              height: 80, // Ajuste conforme necessário
-              width: 160, // Ajuste conforme necessário
+              height: 80,
+              width: 160,
               fit: BoxFit.contain,
             ),
           ),
@@ -160,28 +170,52 @@ class _CadastroPageState extends State<CadastroPage> {
                   _buildTextField(
                     labelText: 'Nome de Usuário',
                     controller: usernameController,
-                    validator: (value) => _validateUsername(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorUsername = _validateUsername(value!);
+                      });
+                    },
+                    errorText: errorUsername,
                   ),
                   const SizedBox(height: 10),
                   _buildTextField(
                     labelText: 'Email',
                     controller: emailController,
-                    validator: (value) => _validateEmail(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorEmail = _validateEmail(value!);
+                      });
+                    },
                     keyboardType: TextInputType.emailAddress,
+                    errorText: errorEmail,
                   ),
                   const SizedBox(height: 10),
                   _buildTextField(
                     labelText: 'Senha',
                     controller: senhaController,
-                    validator: (value) => _validateSenha(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorSenha = _validateSenha(value!);
+                      });
+                    },
                     obscureText: true,
+                    errorText: errorSenha,
                   ),
                   const SizedBox(height: 10),
                   _buildTextField(
                     labelText: 'Confirme sua Senha',
                     controller: confirmSenhaController,
-                    validator: (value) => _validateConfirmSenha(value!),
+                    // ignore: body_might_complete_normally_nullable
+                    validator: (value) {
+                      setState(() {
+                        errorConfirmSenha = _validateConfirmSenha(value!);
+                      });
+                    },
                     obscureText: true,
+                    errorText: errorConfirmSenha,
                   ),
                   const SizedBox(height: 15),
                   ElevatedButton(
@@ -193,7 +227,9 @@ class _CadastroPageState extends State<CadastroPage> {
                           SnackBar(
                             content: Text(
                               'Por favor, corrija os campos destacados.',
+                              style: TextStyle(color: Colors.white),
                             ),
+                            backgroundColor: Colors.red,
                           ),
                         );
                       }
@@ -204,7 +240,7 @@ class _CadastroPageState extends State<CadastroPage> {
                     ),
                     child: const Text(
                       'Cadastrar',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -245,6 +281,7 @@ class _CadastroPageState extends State<CadastroPage> {
     required String? Function(String?) validator,
     bool obscureText = false,
     TextInputType? keyboardType,
+    String? errorText,
   }) {
     return TextFormField(
       controller: controller,
@@ -260,6 +297,7 @@ class _CadastroPageState extends State<CadastroPage> {
         labelStyle: const TextStyle(color: Color.fromARGB(255, 95, 95, 95)),
         fillColor: Colors.white,
         filled: true,
+        errorText: errorText,
       ),
     );
   }
