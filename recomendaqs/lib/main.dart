@@ -35,12 +35,13 @@ class MyApp extends StatelessWidget {
         '/cadastro': (context) => const CadastroPage(),
         '/perfil': (context) => const TelaPerfil(),
         '/favoritos': (context) => const FavoritoPage(),
-        '/hq': (context) => const HqPage(
+        '/hq': (context) => HqPage(
               imagemHQ: '',
               hqDocumentName: '',
             ),
         '/pesquisa': (context) => const TelaPesquisa(),
         '/sobre': (context) => const TelaSobre(),
+        '/gerenciaHq':(context) => const TelaGerenciaHq(),
       },
     );
   }
