@@ -97,7 +97,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Falta a aba de preferências
+                  Navigator.pushNamed(context, '/gerenciaHq');
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -106,7 +106,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ),
                 child: const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Preferências'),
+                  child: Text('Minhas HQs'),
                 ),
               ),
             ),
