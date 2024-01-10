@@ -299,6 +299,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
   }
 
   bool isValidEmail(String email) {
+    // ignore: unnecessary_null_comparison
     return email != null &&
         email.isNotEmpty &&
         email.contains('@') &&
@@ -306,6 +307,7 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
   }
 
   bool isValidPassword(String password) {
+    // ignore: unnecessary_null_comparison
     return password != null && password.isNotEmpty && password.length >= 6;
   }
 }

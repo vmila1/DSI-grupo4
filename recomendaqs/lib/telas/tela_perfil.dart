@@ -195,7 +195,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Falta a aba de preferências
+                  Navigator.pushNamed(context, '/lido');
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -204,7 +204,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ),
                 child: const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Preferências'),
+                  child: Text('HQs lidos'),
                 ),
               ),
             ),
@@ -223,6 +223,24 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 child: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Sobre o RecomendaQs'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/gerenciaHq');
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF1E1E1E),
+                  side: const BorderSide(color: Colors.white),
+                ),
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('minhasHQs'),
                 ),
               ),
             ),

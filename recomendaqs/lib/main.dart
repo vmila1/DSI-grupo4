@@ -41,7 +41,8 @@ class MyApp extends StatelessWidget {
             ),
         '/pesquisa': (context) => const TelaPesquisa(),
         '/sobre': (context) => const TelaSobre(),
-        '/gerenciaHq':(context) => const TelaGerenciaHq(),
+        '/gerenciaHq': (context) => const TelaGerenciaHq(),
+        '/configuracoes_conta': (context) => const ConfiguracaoConta()
       },
     );
   }
