@@ -20,6 +20,7 @@ class _HqPageState extends State<HqPage> {
   bool lido = false;
   String nomeUsuario = '';
   String hqID = '';
+  String anosLancamento = '';
 
   final TextEditingController _textEditingController = TextEditingController();
 
@@ -147,6 +148,20 @@ class _HqPageState extends State<HqPage> {
           [];
 
       hqID = hqDocument.id;
+
+      var anoLancamentoList = hqDocument['anoLançamento'] as List<dynamic>?;
+
+      var ano = 'Não informado';
+      var mes = 'Não informado';
+      var dia = 'Não informado';
+
+      if (anoLancamentoList != null && anoLancamentoList.length >= 3) {
+        ano = anoLancamentoList[0].toString();
+        mes = anoLancamentoList[1].toString();
+        dia = anoLancamentoList[2].toString();
+      }
+
+      anosLancamento = '$dia/$mes/$ano';
     });
 
     return hqDocument;
@@ -408,10 +423,6 @@ class _HqPageState extends State<HqPage> {
 
   @override
   Widget build(BuildContext context) {
-    String anosLancamento = ''; // Declare a variável no escopo
-    // ignore: unused_local_variable
-    String hqID = ''; // Declare a variável no escopo
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -427,8 +438,7 @@ class _HqPageState extends State<HqPage> {
           },
         ),
         actions: [
-          // ignore: unnecessary_null_comparison
-          if (generos != null && generos.isNotEmpty)
+          if (generos.isNotEmpty)
             Expanded(
               child: Center(
                 child: GeneroWidget(generos: generos),
@@ -663,16 +673,16 @@ class _HqPageState extends State<HqPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: Text('Carregando...'),
+        title: const Text('Carregando...'),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/telafundo.png'),
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
+        child: const Center(
           child: CircularProgressIndicator(),
         ),
       ),
@@ -683,16 +693,16 @@ class _HqPageState extends State<HqPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: Text('Erro'),
+        title: const Text('Erro'),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/telafundo.png'),
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
+        child: const Center(
           child: Text('Erro ao carregar os dados da HQ.'),
         ),
       ),
@@ -704,7 +714,7 @@ class _HqPageState extends State<HqPage> {
 
     if (comentario.isNotEmpty && nomeUsuario.isNotEmpty) {
       User? user = FirebaseAuth.instance.currentUser;
-      String uid = user?.uid ?? ""; // Certifique-se de que uid não seja nulo
+      String uid = user?.uid ?? "";
 
       FirebaseFirestore.instance
           .collection('HQs')
