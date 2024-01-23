@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recomendaqs/telas/tela_addhq.dart';
+import 'package:recomendaqs/telas/tela_hq.dart';
 
 class TelaGerenciaHq extends StatefulWidget {
   const TelaGerenciaHq({Key? key}) : super(key: key);
@@ -11,13 +12,28 @@ class TelaGerenciaHq extends StatefulWidget {
 }
 
 class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
-  List<Map<String, dynamic>> minhasHQs =
-      []; // Lista de mapas para armazenar dados das HQs
+  List<Map<String, dynamic>> minhasHQs = [];
 
   @override
   void initState() {
     super.initState();
-    _carregarHQs(); // Carrega as HQs ao iniciar a tela
+    _carregarHQs();
+  }
+
+  void _navegarParaTelaHQ(String hqId) async {
+    try {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HqPage(
+            hqDocumentName: hqId,
+            imagemHQ: '',
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Erro ao navegar para a HQ: $e');
+    }
   }
 
   void _carregarHQs() async {
@@ -28,7 +44,7 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
-          .collection('HQs')
+          .collection('HQs_users')
           .get();
 
       setState(() {
@@ -40,7 +56,15 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
   void _editarHQ(BuildContext context, Map<String, dynamic> hq) async {
     final resultado = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TelaAddHq(edicao: true, hq: hq)),
+      MaterialPageRoute(
+        builder: (context) => TelaAddHq(
+          edicao: true,
+          hq: hq,
+          atualizarNomeQuadrinho: (novoNome) {
+            _atualizarNomeQuadrinho(hq['id'], novoNome);
+          },
+        ),
+      ),
     );
 
     if (resultado != null && resultado is String) {
@@ -51,19 +75,65 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
           backgroundColor: Colors.green,
         ),
       );
-      _carregarHQs(); // Recarrega as HQs após a edição
+
+      final index = minhasHQs.indexWhere((element) => element['id'] == hq['id']);
+      if (index != -1) {
+        setState(() {
+          minhasHQs[index]['nomeQuadrinho'] = resultado;
+        });
+      }
     }
   }
 
-  void _excluirHQ(BuildContext context, String hqId) async {
+  void _atualizarNomeQuadrinho(String id, String novoNome) {
+    final index = minhasHQs.indexWhere((element) => element['id'] == id);
+    if (index != -1) {
+      setState(() {
+        minhasHQs[index]['nomeQuadrinho'] = novoNome;
+      });
+    }
+  }
+
+
+
+  void _exibirConfirmacaoExclusao(String hqId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar exclusão'),
+          content: const Text('Deseja realmente apagar sua HQ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o AlertDialog
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o AlertDialog
+                _apagarHQ(context, hqId);
+              },
+              child: const Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _apagarHQ(BuildContext context, String hqId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final uid = user.uid;
 
+      await FirebaseFirestore.instance.collection('HQs').doc(hqId).delete();
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
-          .collection('HQs')
+          .collection('HQs_users')
           .doc(hqId)
           .delete();
 
@@ -75,7 +145,7 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
         ),
       );
 
-      _carregarHQs(); // Recarrega as HQs após a exclusão
+      _carregarHQs();
     }
   }
 
@@ -86,9 +156,9 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: Text('Minhas HQs'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushNamed(context, '/perfil');
           },
         ),
       ),
@@ -107,7 +177,7 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
         onPressed: () async {
           final novoHQ = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TelaAddHq(edicao: false)),
+            MaterialPageRoute(builder: (context) => TelaAddHq(edicao: false, atualizarNomeQuadrinho: (String ) {  },)),
           );
 
           if (novoHQ != null && novoHQ is String) {
@@ -133,39 +203,44 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
         final hq = minhasHQs[index];
         final hqId = hq['id'];
 
-        return Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: ListTile(
-                title: Text(
-                  hq['nomeQuadrinho'] ?? 'Nome Indisponível',
-                  style: TextStyle(color: Colors.white),
+        return GestureDetector(
+          onTap: () {
+            _navegarParaTelaHQ(hqId);
+          },
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.white),
-                      onPressed: () {
-                        _editarHQ(context, hq);
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.white),
-                      onPressed: () {
-                        _excluirHQ(context, hqId);
-                      },
-                    ),
-                  ],
+                child: ListTile(
+                  title: Text(
+                    hq['nomeQuadrinho'] ?? 'Nome Indisponível',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.white),
+                        onPressed: () {
+                          _editarHQ(context, hq);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.white),
+                        onPressed: () {
+                          _exibirConfirmacaoExclusao(hqId);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-          ],
+              SizedBox(height: 16),
+            ],
+          ),
         );
       },
     );

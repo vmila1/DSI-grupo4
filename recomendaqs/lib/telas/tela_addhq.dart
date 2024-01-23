@@ -6,8 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 class TelaAddHq extends StatefulWidget {
   final bool edicao;
   final Map<String, dynamic>? hq;
+  final Function(String) atualizarNomeQuadrinho;
 
-  TelaAddHq({Key? key, required this.edicao, this.hq}) : super(key: key);
+  TelaAddHq({
+    Key? key,
+    required this.edicao,
+    this.hq,
+    required this.atualizarNomeQuadrinho,
+  }) : super(key: key);
 
   @override
   _TelaAddHqState createState() => _TelaAddHqState();
@@ -22,6 +28,8 @@ class _TelaAddHqState extends State<TelaAddHq> {
   final TextEditingController _precoController = TextEditingController();
   final TextEditingController _nomepersController = TextEditingController();
   final Random _random = Random();
+  
+  get hq => null;
 
   @override
   void initState() {
@@ -40,6 +48,17 @@ class _TelaAddHqState extends State<TelaAddHq> {
     _precoController.text = widget.hq?['preco'] ?? '';
     _nomepersController.text = widget.hq?['nomePersonagem'] ?? '';
   }
+  
+
+  bool _isValidImageUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      return uri.isScheme("http") || uri.isScheme("https");
+    } catch (e) {
+      // Tratar exceção se a URL não for válida
+      return false;
+    }
+  }
 
   Future<String?> _adicionarHQ(BuildContext context) async {
     try {
@@ -47,18 +66,44 @@ class _TelaAddHqState extends State<TelaAddHq> {
       if (user != null) {
         final String randomId = DateTime.now().millisecondsSinceEpoch.toString();
 
+        final nomeQuadrinho = _nomeController.text;
+        final generoQuadrinho = _generoController.text;
+        final resumo = _resumoController.text;
+        final imagem = _imagemController.text;
+        final anoLancamento = _anolancController.text;
+        final preco = _precoController.text;
+        final nomePersonagem = _nomepersController.text;
+
+        if (nomeQuadrinho.isEmpty ||
+            generoQuadrinho.isEmpty ||
+            resumo.isEmpty ||
+            imagem.isEmpty ||
+            anoLancamento.isEmpty ||
+            preco.isEmpty ||
+            nomePersonagem.isEmpty) {
+          // Exibir mensagem informando que todos os campos são obrigatórios
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Todos os campos são obrigatórios.'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return null;
+        }
+
         final hqData = {
           'id': randomId,
-          'nomeQuadrinho': _nomeController.text,
-          'generoQuadrinho': _generoController.text.split(','),
-          'resumo': _resumoController.text,
-          'imagem': _imagemController.text,
-          'anoLançamento': _anolancController.text.split(','),
-          'preco': _precoController.text,
-          'nomePersonagem': _nomepersController.text,
+          'nomeQuadrinho': nomeQuadrinho,
+          'generoQuadrinho': generoQuadrinho.split(','),
+          'resumo': resumo,
+          'imagem': imagem,
+          'anoLançamento': anoLancamento.split(','),
+          'preco': preco,
+          'nomePersonagem': nomePersonagem,
+          'comentarios': [],
         };
 
-        // Adicionar à coleção geral
         await FirebaseFirestore.instance
             .collection('HQs')
             .doc(randomId)
@@ -67,23 +112,21 @@ class _TelaAddHqState extends State<TelaAddHq> {
         if (user != null) {
           final uid = user.uid;
 
-          // Adicionar à coleção do usuário
           await FirebaseFirestore.instance
               .collection('users')
               .doc(uid)
-              .collection('HQs')
+              .collection('HQs_users')
               .doc(randomId)
               .set(hqData);
         }
 
-        return randomId; // Retorna o ID da HQ adicionada
+        return randomId;
       }
     } catch (e) {
-      // Tratar o erro conforme necessário
       print('Erro ao adicionar HQ: $e');
     }
 
-    return null; // Retorna null em caso de erro
+    return null;
   }
 
   void _editarHQ(BuildContext context) async {
@@ -92,8 +135,47 @@ class _TelaAddHqState extends State<TelaAddHq> {
       if (user != null && widget.edicao) {
         final uid = user.uid;
 
-        // Lógica para editar o HQ usando hqId
-        // Atualize os dados no Firebase ou no local de armazenamento
+        final nomeQuadrinho = _nomeController.text;
+        final generoQuadrinho = _generoController.text;
+        final resumo = _resumoController.text;
+        final imagem = _imagemController.text;
+        final anoLancamento = _anolancController.text;
+        final preco = _precoController.text;
+        final nomePersonagem = _nomepersController.text;
+
+        if (nomeQuadrinho.isEmpty ||
+            generoQuadrinho.isEmpty ||
+            resumo.isEmpty ||
+            imagem.isEmpty ||
+            anoLancamento.isEmpty ||
+            preco.isEmpty ||
+            nomePersonagem.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Todos os campos são obrigatórios.'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final hqData = {
+          'nomeQuadrinho': nomeQuadrinho,
+          'generoQuadrinho': generoQuadrinho.split(','),
+          'resumo': resumo,
+          'imagem': imagem,
+          'anoLançamento': anoLancamento.split('/'), 
+          'preco': preco,
+          'nomePersonagem': nomePersonagem,
+        };
+
+        await FirebaseFirestore.instance
+            .collection('HQs')
+            .doc(widget.hq?['id'])
+            .update(hqData);
+
+        widget.atualizarNomeQuadrinho(nomeQuadrinho); // Atualiza o nome na tela de gerência
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -106,8 +188,31 @@ class _TelaAddHqState extends State<TelaAddHq> {
       }
     } catch (e) {
       print('Erro ao editar HQ: $e');
-      // Tratar o erro conforme necessário
     }
+  }
+
+
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String labelText,
+    String hintText,
+  ) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: hintText,
+        labelStyle: TextStyle(color: Colors.white),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+        ),
+      ),
+      style: TextStyle(color: Colors.white),
+    );
   }
 
   @override
@@ -138,21 +243,48 @@ class _TelaAddHqState extends State<TelaAddHq> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextField(
-                    controller: _nomeController,
-                    decoration: InputDecoration(
-                      labelText: 'Nome da HQ',
-                      labelStyle: TextStyle(color: Colors.white),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                    ),
-                    style: TextStyle(color: Colors.white),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _nomeController,
+                    'Nome da HQ',
+                    'Informe o nome da HQ',
                   ),
-                  // Adicione os outros TextFields conforme necessário...
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _generoController,
+                    'Gênero (separado por vírgulas)',
+                    'Informe o gênero',
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _resumoController,
+                    'Resumo',
+                    'Informe o resumo',
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _imagemController,
+                    'URL da imagem',
+                    'Informe a URL da imagem',
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _anolancController,
+                    'Ano de lançamento (separado por /)',
+                    'Informe o ano de lançamento',
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _precoController,
+                    'Preço',
+                    'Informe o preço',
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    _nomepersController,
+                    'Nome do personagem',
+                    'Informe o nome do personagem',
+                  ),
                   SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () async {
