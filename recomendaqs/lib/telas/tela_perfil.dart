@@ -204,7 +204,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                 ),
                 child: const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('HQs lidos'),
+                  child: Text('HQs lidas'),
                 ),
               ),
             ),

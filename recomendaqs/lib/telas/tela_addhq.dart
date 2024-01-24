@@ -27,8 +27,10 @@ class _TelaAddHqState extends State<TelaAddHq> {
   final TextEditingController _anolancController = TextEditingController();
   final TextEditingController _precoController = TextEditingController();
   final TextEditingController _nomepersController = TextEditingController();
+  final TextEditingController _linkCompraController = TextEditingController();
+  // ignore: unused_field
   final Random _random = Random();
-  
+
   get hq => null;
 
   @override
@@ -41,21 +43,22 @@ class _TelaAddHqState extends State<TelaAddHq> {
 
   void _carregarDadosHQ() {
     _nomeController.text = widget.hq?['nomeQuadrinho'] ?? '';
-    _generoController.text = (widget.hq?['generoQuadrinho'] as List<dynamic>?)?.join(',') ?? '';
+    _generoController.text =
+        (widget.hq?['generoQuadrinho'] as List<dynamic>?)?.join(',') ?? '';
     _resumoController.text = widget.hq?['resumo'] ?? '';
     _imagemController.text = widget.hq?['imagem'] ?? '';
-    _anolancController.text = (widget.hq?['anoLançamento'] as List<dynamic>?)?.join(',') ?? '';
+    _anolancController.text =
+        (widget.hq?['anoLançamento'] as List<dynamic>?)?.join(',') ?? '';
     _precoController.text = widget.hq?['preco'] ?? '';
     _nomepersController.text = widget.hq?['nomePersonagem'] ?? '';
+    _linkCompraController.text = widget.hq?['link'] ?? '';
   }
-  
 
   bool _isValidImageUrl(String url) {
     try {
       final uri = Uri.parse(url);
       return uri.isScheme("http") || uri.isScheme("https");
     } catch (e) {
-      // Tratar exceção se a URL não for válida
       return false;
     }
   }
@@ -64,7 +67,8 @@ class _TelaAddHqState extends State<TelaAddHq> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final String randomId = DateTime.now().millisecondsSinceEpoch.toString();
+        final String randomId =
+            DateTime.now().millisecondsSinceEpoch.toString();
 
         final nomeQuadrinho = _nomeController.text;
         final generoQuadrinho = _generoController.text;
@@ -81,7 +85,6 @@ class _TelaAddHqState extends State<TelaAddHq> {
             anoLancamento.isEmpty ||
             preco.isEmpty ||
             nomePersonagem.isEmpty) {
-          // Exibir mensagem informando que todos os campos são obrigatórios
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Todos os campos são obrigatórios.'),
@@ -101,6 +104,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
           'anoLançamento': anoLancamento.split(','),
           'preco': preco,
           'nomePersonagem': nomePersonagem,
+          'link': _linkCompraController.text, // Adicione esta linha
           'comentarios': [],
         };
 
@@ -109,6 +113,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
             .doc(randomId)
             .set(hqData);
 
+        // ignore: unnecessary_null_comparison
         if (user != null) {
           final uid = user.uid;
 
@@ -133,6 +138,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null && widget.edicao) {
+        // ignore: unused_local_variable
         final uid = user.uid;
 
         final nomeQuadrinho = _nomeController.text;
@@ -165,7 +171,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
           'generoQuadrinho': generoQuadrinho.split(','),
           'resumo': resumo,
           'imagem': imagem,
-          'anoLançamento': anoLancamento.split('/'), 
+          'anoLançamento': anoLancamento.split('/'),
           'preco': preco,
           'nomePersonagem': nomePersonagem,
         };
@@ -175,7 +181,8 @@ class _TelaAddHqState extends State<TelaAddHq> {
             .doc(widget.hq?['id'])
             .update(hqData);
 
-        widget.atualizarNomeQuadrinho(nomeQuadrinho); // Atualiza o nome na tela de gerência
+        widget.atualizarNomeQuadrinho(
+            nomeQuadrinho); // Atualiza o nome na tela de gerência
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -190,8 +197,6 @@ class _TelaAddHqState extends State<TelaAddHq> {
       print('Erro ao editar HQ: $e');
     }
   }
-
-
 
   Widget _buildTextField(
     TextEditingController controller,
@@ -220,13 +225,18 @@ class _TelaAddHqState extends State<TelaAddHq> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: Text(widget.edicao ? 'Editar HQ' : 'Adicionar HQ'),
+        title: Text(
+          widget.edicao ? 'Editar HQ' : 'Adicionar HQ',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
+          color: Colors.white,
         ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -286,6 +296,12 @@ class _TelaAddHqState extends State<TelaAddHq> {
                     'Informe o nome do personagem',
                   ),
                   SizedBox(height: 24),
+                  _buildTextField(
+                    _linkCompraController,
+                    'Link de Compra',
+                    'Informe o link de compra',
+                  ),
+                  SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () async {
                       if (widget.edicao) {
@@ -302,7 +318,12 @@ class _TelaAddHqState extends State<TelaAddHq> {
                       backgroundColor: const Color(0xFF5653FF),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                     ),
-                    child: Text(widget.edicao ? 'Editar HQ' : 'Adicionar HQ'),
+                    child: Text(
+                      widget.edicao ? 'Editar HQ' : 'Adicionar HQ',
+                      style: TextStyle(
+                          color: Colors
+                              .white), // Defina a cor do texto como branco
+                    ),
                   ),
                 ],
               ),
