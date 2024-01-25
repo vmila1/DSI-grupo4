@@ -91,6 +91,12 @@ flutter:
   - assets/images/avatar2.jpg
   - assets/images/logo.png
   - assets/images/recomendaqs.png
+  - assets/images/icons/icon-36x36.png
+  - assets/images/icons/icon-48x48.png
+  - assets/images/icons/icon-72x72.png
+  - assets/images/icons/icon-96x96.png
+  - assets/images/icons/icon-144x144.png
+  - assets/images/icons/icon-192x192.png
 
   #   - images/a_dot_ham.jpeg
 
