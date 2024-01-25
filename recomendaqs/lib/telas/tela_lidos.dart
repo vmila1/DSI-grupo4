@@ -13,24 +13,27 @@ class LidoPage extends StatefulWidget {
 class _LidoPageState extends State<LidoPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late User _user;
-  late List<String> hqsLidas;
+  late Future<List<String>> _hqsLidasFuture;
 
   @override
   void initState() {
     super.initState();
     _user = _auth.currentUser!;
-    _loadHqsLidas();
+    _hqsLidasFuture = _loadHqsLidas();
   }
 
-  Future<void> _loadHqsLidas() async {
+  Future<List<String>> _loadHqsLidas() async {
     final DocumentSnapshot<Map<String, dynamic>> userDoc =
-        await FirebaseFirestore.instance.collection('Users').doc(_user.uid).get();
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(_user.uid)
+            .get();
 
     if (userDoc.exists) {
       final data = userDoc.data()!;
-      setState(() {
-        hqsLidas = List<String>.from(data['HQsLidas'] ?? []);
-      });
+      return List<String>.from(data['HQsLidas'] ?? []);
+    } else {
+      return [];
     }
   }
 
@@ -39,26 +42,74 @@ class _LidoPageState extends State<LidoPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: const Text('HQs Lidas'),
+        title: Text(
+          'HQs Lidas',
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: Stack(
-        children: [
-          Image.asset(
-            'assets/images/telafundo.png',
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-          ),
-          hqsLidas.isNotEmpty
-              ? ImagensHQ(hqsLidas: hqsLidas)
-              : const Center(
-                  // Mostra a mensagem quando não há HQs lidas
-                  child: Text('Sem HQs marcadas como Lidas'),
+      body: FutureBuilder<List<String>>(
+        future: _hqsLidasFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Se os dados ainda estão sendo carregados, exiba a tela de carregamento
+            return _buildLoadingScreen();
+          } else if (snapshot.hasError) {
+            // Se ocorrer um erro, você pode exibir uma mensagem de erro aqui
+            return Center(
+              child: Text('Erro ao carregar HQs lidas.'),
+            );
+          } else if (snapshot.data!.isEmpty) {
+            // Se não houver HQs lidas, exiba uma mensagem informando isso
+            return Center(
+              child: Text('Sem HQs marcadas como Lidas'),
+            );
+          } else {
+            // Se houver HQs lidas, exiba a grade de imagens
+            return Stack(
+              children: [
+                Image.asset(
+                  'assets/images/telafundo.png',
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
                 ),
-        ],
+                ImagensHQ(hqsLidas: snapshot.data!),
+              ],
+            );
+          }
+        },
       ),
     );
   }
+}
+
+Widget _buildLoadingScreen() {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+      title: const Text(
+        'Carregando...',
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+    body: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/telafundo.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    ),
+  );
 }
 
 class ImagensHQ extends StatelessWidget {
@@ -79,7 +130,10 @@ class ImagensHQ extends StatelessWidget {
         var hqDocumentName = hqsLidas[index];
 
         return StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance.collection('HQs').doc(hqDocumentName).snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('HQs')
+              .doc(hqDocumentName)
+              .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());

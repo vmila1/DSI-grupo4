@@ -35,18 +35,36 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
     }
   }
 
+  ElevatedButton _buildElevatedButton(String label, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        primary: const Color.fromRGBO(86, 83, 255, 1),
+        onPrimary: Colors.white,
+      ),
+      child: Text(
+        label,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configurações da Conta'),
+        title: const Text(
+          'Configurações da Conta',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushNamed(context, '/perfil');
           },
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -63,21 +81,15 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
               children: [
                 _buildEmailSection(),
                 const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _startEmailVerificationAndChangeEmail();
-                  },
-                  child: const Text('Alterar E-mail'),
-                ),
+                _buildElevatedButton('Alterar E-mail', () async {
+                  await _startEmailVerificationAndChangeEmail();
+                }),
                 const SizedBox(height: 64.0),
                 _buildPasswordSection(),
                 const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _reauthenticateAndChangePassword();
-                  },
-                  child: const Text('Alterar Senha'),
-                ),
+                _buildElevatedButton('Alterar Senha', () async {
+                  await _reauthenticateAndChangePassword();
+                }),
               ],
             ),
           ),
@@ -90,9 +102,20 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildTextField('Novo E-mail', emailController),
+        _buildTextField(
+          emailController,
+          'Novo E-mail',
+          'Digite seu novo e-mail',
+          hintTextColor: Colors.white,
+        ),
         const SizedBox(height: 16.0),
-        _buildTextField('Senha Atual', currentPasswordController),
+        _buildTextField(
+          currentPasswordController,
+          'Senha Atual',
+          'Digite sua senha atual',
+          hintTextColor: Colors.white,
+          obscureText: true, // Adicione esta linha para ocultar os caracteres
+        ),
       ],
     );
   }
@@ -101,25 +124,54 @@ class _ConfiguracaoContaState extends State<ConfiguracaoConta> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildTextField('Senha Atual', currentPasswordController),
+        _buildTextField(
+          currentPasswordController,
+          'Senha Atual',
+          'Digite sua senha atual',
+          hintTextColor: Colors.white,
+          obscureText: true, // Adicione esta linha para ocultar os caracteres
+        ),
         const SizedBox(height: 16.0),
-        _buildTextField('Nova Senha', newPasswordController),
+        _buildTextField(
+          newPasswordController,
+          'Nova Senha',
+          'Digite sua nova senha',
+          hintTextColor: Colors.white,
+          obscureText: true, // Adicione esta linha para ocultar os caracteres
+        ),
         const SizedBox(height: 16.0),
-        _buildTextField('Confirmar Nova Senha', confirmNewPasswordController),
+        _buildTextField(
+          confirmNewPasswordController,
+          'Confirmar Nova Senha',
+          'Confirme sua nova senha',
+          hintTextColor: Colors.white,
+          obscureText: true, // Adicione esta linha para ocultar os caracteres
+        ),
       ],
     );
   }
 
-  Widget _buildTextField(String labelText, TextEditingController controller) {
+  Widget _buildTextField(
+      TextEditingController controller, String labelText, String hintText,
+      {Color? hintTextColor,
+      bool obscureText = false} // Adicione este parâmetro opcional
+      ) {
     return TextField(
       controller: controller,
-      obscureText: labelText.contains('Senha'),
+      obscureText: obscureText, // Adicione esta linha
       decoration: InputDecoration(
         labelText: labelText,
-        border: const OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.grey[300],
+        hintText: hintText,
+        labelStyle: TextStyle(color: Colors.white),
+        hintStyle: TextStyle(color: hintTextColor ?? Colors.white),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+        ),
       ),
+      style: TextStyle(color: Colors.white),
     );
   }
 

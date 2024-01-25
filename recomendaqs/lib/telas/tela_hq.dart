@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
@@ -21,6 +22,7 @@ class _HqPageState extends State<HqPage> {
   String nomeUsuario = '';
   String hqID = '';
   String anosLancamento = '';
+  String link = '';
 
   final TextEditingController _textEditingController = TextEditingController();
 
@@ -525,11 +527,62 @@ class _HqPageState extends State<HqPage> {
                           color: Colors.white,
                           fontSize: 17,
                         )),
-                    Text('Resumo: ${hqData['resumo'] ?? 'Não informado'}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        )),
+                    Text(
+                      'Resumo: ${hqData['resumo'] ?? 'Não informado'}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        // Abre a URL ao clicar no link
+                        if (hqData['link'] != null &&
+                            hqData['link'].isNotEmpty) {
+                          try {
+                            if (await canLaunch(hqData['link']!)) {
+                              await launch(hqData['link']!);
+                            } else {
+                              // Tratar o caso em que a URL não pode ser lançada
+                              print(
+                                  'Não foi possível abrir a URL: ${hqData['link']}');
+                            }
+                          } catch (e) {
+                            // Capture e imprima a exceção
+                            print('Erro ao lançar a URL: $e');
+                          }
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Link para compra: ',
+                              style: const TextStyle(
+                                color: Colors
+                                    .white, // Cor do texto 'Link para compra'
+                                fontSize: 17,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                hqData['link'] ?? 'Não informado',
+                                maxLines: 1, // Define o número máximo de linhas
+                                overflow: TextOverflow
+                                    .ellipsis, // Adiciona reticências se o texto ultrapassar
+                                style: const TextStyle(
+                                  color: Colors.blue, // Cor azul para o link
+                                  fontSize: 17,
+                                  decoration: TextDecoration
+                                      .underline, // Adiciona sublinhado
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -673,7 +726,10 @@ class _HqPageState extends State<HqPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: const Text('Carregando...'),
+        title: const Text(
+          'Carregando...',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(

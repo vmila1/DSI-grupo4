@@ -13,24 +13,27 @@ class FavoritoPage extends StatefulWidget {
 class _FavoritoPageState extends State<FavoritoPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late User _user;
-  late List<String> hqsFavoritas;
+  late Future<List<String>> _hqsFavoritasFuture;
 
   @override
   void initState() {
     super.initState();
     _user = _auth.currentUser!;
-    _loadHqsFavoritas();
+    _hqsFavoritasFuture = _loadHqsFavoritas();
   }
 
-  Future<void> _loadHqsFavoritas() async {
+  Future<List<String>> _loadHqsFavoritas() async {
     final DocumentSnapshot<Map<String, dynamic>> userDoc =
-        await FirebaseFirestore.instance.collection('Users').doc(_user.uid).get();
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(_user.uid)
+            .get();
 
     if (userDoc.exists) {
       final data = userDoc.data()!;
-      setState(() {
-        hqsFavoritas = List<String>.from(data['HQsFavoritas'] ?? []);
-      });
+      return List<String>.from(data['HQsFavoritas'] ?? []);
+    } else {
+      return [];
     }
   }
 
@@ -39,26 +42,77 @@ class _FavoritoPageState extends State<FavoritoPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: const Text('HQs Favoritas'),
+        title: Text(
+          'HQs Favoritas',
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: Stack(
-        children: [
-          Image.asset(
-            'assets/images/telafundo.png',
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-          ),
-          hqsFavoritas.isNotEmpty
-              ? ImagensHQ(hqsFavoritas: hqsFavoritas)
-              : const Center(
-                  // Mostra a mensagem quando não há HQs favoritadas
-                  child: Text('Sem HQs marcadas como Favoritas'),
+      body: FutureBuilder<List<String>>(
+        future: _hqsFavoritasFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Se os dados ainda estão sendo carregados, exiba a tela de carregamento
+            return _buildLoadingScreen();
+          } else if (snapshot.hasError) {
+            // Se ocorrer um erro, você pode exibir uma mensagem de erro aqui
+            return Center(
+              child: Text('Erro ao carregar HQs favoritas.'),
+            );
+          } else if (snapshot.data!.isEmpty) {
+            // Se não houver HQs favoritas, exiba uma mensagem informando isso
+            return Center(
+              child: Text(
+                'Sem HQs marcadas como Favoritas',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          } else {
+            // Se houver HQs favoritas, exiba a grade de imagens
+            return Stack(
+              children: [
+                Image.asset(
+                  'assets/images/telafundo.png',
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
                 ),
-        ],
+                ImagensHQ(hqsFavoritas: snapshot.data!),
+              ],
+            );
+          }
+        },
       ),
     );
   }
+}
+
+Widget _buildLoadingScreen() {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+      title: const Text(
+        'Carregando...',
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+    body: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/telafundo.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    ),
+  );
 }
 
 class ImagensHQ extends StatelessWidget {
@@ -79,7 +133,10 @@ class ImagensHQ extends StatelessWidget {
         var hqDocumentName = hqsFavoritas[index];
 
         return StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance.collection('HQs').doc(hqDocumentName).snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('HQs')
+              .doc(hqDocumentName)
+              .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());

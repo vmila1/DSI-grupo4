@@ -76,7 +76,8 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
         ),
       );
 
-      final index = minhasHQs.indexWhere((element) => element['id'] == hq['id']);
+      final index =
+          minhasHQs.indexWhere((element) => element['id'] == hq['id']);
       if (index != -1) {
         setState(() {
           minhasHQs[index]['nomeQuadrinho'] = resultado;
@@ -93,8 +94,6 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
       });
     }
   }
-
-
 
   void _exibirConfirmacaoExclusao(String hqId) {
     showDialog(
@@ -154,9 +153,15 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: Text('Minhas HQs'),
+        title: Text(
+          'Minhas HQs',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18.0,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pushNamed(context, '/perfil');
           },
@@ -170,14 +175,20 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
             height: double.infinity,
             width: double.infinity,
           ),
-          _buildHQList(),
+          Center(
+            child: _buildHQList(),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final novoHQ = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TelaAddHq(edicao: false, atualizarNomeQuadrinho: (String ) {  },)),
+            MaterialPageRoute(
+                builder: (context) => TelaAddHq(
+                      edicao: false,
+                      atualizarNomeQuadrinho: (String) {},
+                    )),
           );
 
           if (novoHQ != null && novoHQ is String) {
