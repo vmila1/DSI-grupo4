@@ -475,11 +475,15 @@ class _HqPageState extends State<HqPage> {
                 width: double.infinity,
               ),
               SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.bottom +
+                      AppBar().preferredSize.height +
+                      10.0, // Ajuste o valor conforme necessário
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 40.0),
+                    SizedBox(height: AppBar().preferredSize.height),
                     Text(
                       hqData['nomeQuadrinho'] ?? 'Nome não informado',
                       style: const TextStyle(
@@ -801,8 +805,10 @@ class _HqPageState extends State<HqPage> {
 
 class GeneroWidget extends StatelessWidget {
   final List<String> generos;
+  final int maxGeneros;
 
-  const GeneroWidget({super.key, required this.generos});
+  const GeneroWidget({Key? key, required this.generos, this.maxGeneros = 2})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -816,7 +822,7 @@ class GeneroWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: generos.map((genero) {
+          children: generos.take(maxGeneros).map((genero) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Chip(

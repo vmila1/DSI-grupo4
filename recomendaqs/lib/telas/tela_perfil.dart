@@ -155,7 +155,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.edit),
+                  icon: const Icon(Icons.edit, color: Colors.white),
                   onPressed: () {
                     _exibirDialogoEditarNome();
                   },
