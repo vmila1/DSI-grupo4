@@ -104,7 +104,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
           'anoLançamento': anoLancamento.split(','),
           'preco': preco,
           'nomePersonagem': nomePersonagem,
-          'link': _linkCompraController.text, // Adicione esta linha
+          'link': _linkCompraController.text,
           'comentarios': [],
         };
 
@@ -181,8 +181,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
             .doc(widget.hq?['id'])
             .update(hqData);
 
-        widget.atualizarNomeQuadrinho(
-            nomeQuadrinho); // Atualiza o nome na tela de gerência
+        widget.atualizarNomeQuadrinho(nomeQuadrinho);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -209,6 +208,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
         labelText: labelText,
         hintText: hintText,
         labelStyle: TextStyle(color: Colors.white),
+        hintStyle: TextStyle(color: Colors.white70),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
         ),
@@ -320,9 +320,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
                     ),
                     child: Text(
                       widget.edicao ? 'Editar HQ' : 'Adicionar HQ',
-                      style: TextStyle(
-                          color: Colors
-                              .white), // Defina a cor do texto como branco
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
