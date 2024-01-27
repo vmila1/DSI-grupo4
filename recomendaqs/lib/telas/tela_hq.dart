@@ -460,7 +460,7 @@ class _HqPageState extends State<HqPage> {
           }
 
           var hqData = snapshot.data!.data()!;
-          // Atualize generos quando os dados estiverem disponíveis
+
           generos = (hqData['generoQuadrinho'] as List<dynamic>?)
                   ?.map((genero) => genero.toString())
                   .toList() ??
@@ -478,7 +478,7 @@ class _HqPageState extends State<HqPage> {
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.bottom +
                       AppBar().preferredSize.height +
-                      10.0, // Ajuste o valor conforme necessário
+                      -50.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -531,60 +531,62 @@ class _HqPageState extends State<HqPage> {
                           color: Colors.white,
                           fontSize: 17,
                         )),
-                    Text(
-                      'Resumo: ${hqData['resumo'] ?? 'Não informado'}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        // Abre a URL ao clicar no link
-                        if (hqData['link'] != null &&
-                            hqData['link'].isNotEmpty) {
-                          try {
-                            if (await canLaunch(hqData['link']!)) {
-                              await launch(hqData['link']!);
-                            } else {
-                              // Tratar o caso em que a URL não pode ser lançada
-                              print(
-                                  'Não foi possível abrir a URL: ${hqData['link']}');
-                            }
-                          } catch (e) {
-                            // Capture e imprima a exceção
-                            print('Erro ao lançar a URL: $e');
-                          }
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Link para compra: ',
-                              style: const TextStyle(
-                                color: Colors
-                                    .white, // Cor do texto 'Link para compra'
-                                fontSize: 17,
+                    Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Resumo: ${hqData['resumo'] ?? 'Não informado'}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              if (hqData['link'] != null &&
+                                  hqData['link'].isNotEmpty) {
+                                try {
+                                  if (await canLaunch(hqData['link']!)) {
+                                    await launch(hqData['link']!);
+                                  } else {
+                                    print(
+                                        'Não foi possível abrir a URL: ${hqData['link']}');
+                                  }
+                                } catch (e) {
+                                  print('Erro ao lançar a URL: $e');
+                                }
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Link para compra: ',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      hqData['link'] ?? 'Não informado',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 17,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Flexible(
-                              child: Text(
-                                hqData['link'] ?? 'Não informado',
-                                maxLines: 1, // Define o número máximo de linhas
-                                overflow: TextOverflow
-                                    .ellipsis, // Adiciona reticências se o texto ultrapassar
-                                style: const TextStyle(
-                                  color: Colors.blue, // Cor azul para o link
-                                  fontSize: 17,
-                                  decoration: TextDecoration
-                                      .underline, // Adiciona sublinhado
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -645,77 +647,80 @@ class _HqPageState extends State<HqPage> {
                       ],
                     ),
                     const SizedBox(height: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Comentários:',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Comentários:',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('HQs')
-                              .doc(widget.hqDocumentName)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return const CircularProgressIndicator();
-                            }
+                          const SizedBox(height: 10),
+                          StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('HQs')
+                                .doc(widget.hqDocumentName)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const CircularProgressIndicator();
+                              }
 
-                            var comentarios = snapshot.data!.get('comentarios')
-                                    as List<dynamic>? ??
-                                [];
+                              var comentarios = snapshot.data!
+                                      .get('comentarios') as List<dynamic>? ??
+                                  [];
 
-                            return Container(
-                              color: Colors.white.withOpacity(0),
-                              child: Column(
-                                children: [
-                                  for (var comentario in comentarios)
-                                    _itemChats(
-                                      name: comentario['name'],
-                                      chat: comentario['chat'],
-                                      uid: comentario['uid'],
-                                    ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 15),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _textEditingController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Digite seu comentário...',
-                                  border: OutlineInputBorder(),
-                                  fillColor: Colors.white,
-                                  filled: true,
+                              return Container(
+                                color: Colors.white.withOpacity(0),
+                                child: Column(
+                                  children: [
+                                    for (var comentario in comentarios)
+                                      _itemChats(
+                                        name: comentario['name'],
+                                        chat: comentario['chat'],
+                                        uid: comentario['uid'],
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _textEditingController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Digite seu comentário...',
+                                    border: OutlineInputBorder(),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _adicionarComentario();
-                              },
-                              icon: const Icon(Icons.send),
-                              label: const Text(''),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
+                              const SizedBox(width: 10),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _adicionarComentario();
+                                },
+                                icon: const Icon(Icons.send),
+                                label: const Text(''),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
