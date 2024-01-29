@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/link.dart';
 
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
@@ -478,7 +478,7 @@ class _HqPageState extends State<HqPage> {
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.bottom +
                       AppBar().preferredSize.height +
-                      -50.0,
+                      -0.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -543,49 +543,9 @@ class _HqPageState extends State<HqPage> {
                               fontSize: 16,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (hqData['link'] != null &&
-                                  hqData['link'].isNotEmpty) {
-                                try {
-                                  if (await canLaunch(hqData['link']!)) {
-                                    await launch(hqData['link']!);
-                                  } else {
-                                    print(
-                                        'Não foi possível abrir a URL: ${hqData['link']}');
-                                  }
-                                } catch (e) {
-                                  print('Erro ao lançar a URL: $e');
-                                }
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Link para compra: ',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      hqData['link'] ?? 'Não informado',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 17,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          CustomLinkWidget(
+                              url: hqData[
+                                  'link']), // Substituído GestureDetector pelo CustomLinkWidget
                         ],
                       ),
                     ),
@@ -805,6 +765,34 @@ class _HqPageState extends State<HqPage> {
         print('Erro ao adicionar comentário: $error');
       });
     }
+  }
+}
+
+class CustomLinkWidget extends StatelessWidget {
+  final String? url;
+
+  const CustomLinkWidget({Key? key, this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Link(
+      uri: Uri.parse(url ?? ''),
+      target: LinkTarget.blank,
+      builder: (BuildContext ctx, FollowLink? openLink) {
+        return TextButton.icon(
+          onPressed: openLink,
+          label: const Text('Link para compra: '),
+          icon: const Icon(Icons.read_more),
+          style: TextButton.styleFrom(
+            primary: Colors.blue, // Cor do texto do botão
+            textStyle: const TextStyle(
+              fontSize: 17,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
