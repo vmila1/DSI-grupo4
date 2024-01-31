@@ -106,6 +106,7 @@ class _TelaAddHqState extends State<TelaAddHq> {
           'nomePersonagem': nomePersonagem,
           'link': _linkCompraController.text,
           'comentarios': [],
+          'avaliacoes': [],
         };
 
         await FirebaseFirestore.instance

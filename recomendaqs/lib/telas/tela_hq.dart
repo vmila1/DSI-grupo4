@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/link.dart';
 
 class HqPage extends StatefulWidget {
   final String hqDocumentName;
@@ -25,6 +25,7 @@ class _HqPageState extends State<HqPage> {
   String link = '';
 
   final TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _notaController = TextEditingController();
 
   @override
   void initState() {
@@ -174,7 +175,6 @@ class _HqPageState extends State<HqPage> {
       favorito = !favorito;
     });
 
-    // Adiciona ou remove o ID da HQ na lista de favoritos do usuário
     _atualizarListaUsuarios(favorito, 'HQsFavoritas', hqID);
   }
 
@@ -183,7 +183,6 @@ class _HqPageState extends State<HqPage> {
       lido = !lido;
     });
 
-    // Adicione ou remove o ID da HQ à lista de HQs lidas do usuário
     _atualizarListaUsuarios(lido, 'HQsLidas', hqID);
   }
 
@@ -203,14 +202,11 @@ class _HqPageState extends State<HqPage> {
           var lista = List<String>.from(dadosUsuario[campo] ?? []);
 
           if (adicionar) {
-            // Adiciona o ID da HQ à lista
             lista.add(hqID);
           } else {
-            // Remove o ID da HQ da lista
             lista.remove(hqID);
           }
 
-          // Atualiza a lista no Firebase
           FirebaseFirestore.instance
               .collection('Users')
               .doc(uid)
@@ -351,7 +347,7 @@ class _HqPageState extends State<HqPage> {
               comentario['name'] == name &&
               comentario['chat'] == chatAntigo) {
             comentario['chat'] = novoComentario;
-            comentario['name'] = nomeUsuario; // Atualiza o nome do usuário
+            comentario['name'] = nomeUsuario;
             break;
           }
         }
@@ -378,13 +374,13 @@ class _HqPageState extends State<HqPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o AlertDialog
+                Navigator.of(context).pop();
               },
               child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o AlertDialog
+                Navigator.of(context).pop();
                 _apagarComentario(uid, name, chat);
               },
               child: const Text('Confirmar'),
@@ -478,7 +474,7 @@ class _HqPageState extends State<HqPage> {
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.bottom +
                       AppBar().preferredSize.height +
-                      5.0,
+                      -50.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -506,7 +502,7 @@ class _HqPageState extends State<HqPage> {
                         const Icon(Icons.star, color: Colors.yellow),
                         const SizedBox(width: 5),
                         Text(
-                          '${hqData['avaliacao'] ?? 'Não avaliado'}',
+                          '${calcularMediaAvaliacoes(hqData['avaliacoes'] ?? []).toStringAsFixed(1)}',
                           style: const TextStyle(
                             fontSize: 18,
                             color: Colors.white,
@@ -543,49 +539,7 @@ class _HqPageState extends State<HqPage> {
                               fontSize: 16,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (hqData['link'] != null &&
-                                  hqData['link'].isNotEmpty) {
-                                try {
-                                  if (await canLaunch(hqData['link']!)) {
-                                    await launch(hqData['link']!);
-                                  } else {
-                                    print(
-                                        'Não foi possível abrir a URL: ${hqData['link']}');
-                                  }
-                                } catch (e) {
-                                  print('Erro ao lançar a URL: $e');
-                                }
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Link para compra: ',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      hqData['link'] ?? 'Não informado',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 17,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          CustomLinkWidget(url: hqData['link']),
                         ],
                       ),
                     ),
@@ -641,6 +595,83 @@ class _HqPageState extends State<HqPage> {
                             style: const TextStyle(
                               fontSize: 16,
                               color: Color.fromARGB(255, 65, 64, 64),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 19, right: 15, bottom: 4.0),
+                          child: Text(
+                            'Avalie esse quadrinho:',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(11.0),
+                          child: Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _notaController,
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Digite a nota (1-5)',
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.all(10),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      double nota = double.tryParse(
+                                              _notaController.text) ??
+                                          0.0;
+                                      if (nota >= 1 && nota <= 5) {
+                                        adicionarAvaliacao(nota);
+                                        _adicionarComentario();
+                                        _notaController.clear();
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Nota Inválida, digite uma nota de 1 a 5',
+                                            ),
+                                            backgroundColor: Colors.amber,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.send),
+                                    label: const Text(''),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -774,6 +805,84 @@ class _HqPageState extends State<HqPage> {
     );
   }
 
+  Future<void> adicionarAvaliacao(double nota) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        var uid = user.uid;
+
+        // Verifica se o usuário já avaliou a HQ
+        var hqDocument = await FirebaseFirestore.instance
+            .collection('HQs')
+            .doc(widget.hqDocumentName)
+            .get();
+
+        var avaliacoes = hqDocument['avaliacoes'] as List<dynamic>? ?? [];
+
+        var usuarioJaAvaliouIndex =
+            avaliacoes.indexWhere((avaliacao) => avaliacao['uid'] == uid);
+
+        if (usuarioJaAvaliouIndex != -1) {
+          // Se o usuário já avaliou, atualiza a avaliação existente
+          avaliacoes[usuarioJaAvaliouIndex]['nota'] = nota;
+
+          await FirebaseFirestore.instance
+              .collection('HQs')
+              .doc(widget.hqDocumentName)
+              .update({'avaliacoes': avaliacoes});
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Avaliação atualizada com sucesso.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          avaliacoes.add({
+            'uid': uid,
+            'name': nomeUsuario,
+            'nota': nota,
+          });
+
+          await FirebaseFirestore.instance
+              .collection('HQs')
+              .doc(widget.hqDocumentName)
+              .update({'avaliacoes': avaliacoes});
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Avaliação adicionada com sucesso.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Erro ao adicionar/atualizar avaliação: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Erro ao adicionar/atualizar avaliação. Tente novamente.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  double calcularMediaAvaliacoes(List<dynamic> avaliacoes) {
+    if (avaliacoes.isEmpty) {
+      return 0.0;
+    }
+
+    double somaNotas = 0.0;
+    for (var avaliacao in avaliacoes) {
+      somaNotas += (avaliacao['nota'] as num).toDouble();
+    }
+
+    return somaNotas / avaliacoes.length;
+  }
+
   void _adicionarComentario() {
     String comentario = _textEditingController.text.trim();
 
@@ -805,6 +914,34 @@ class _HqPageState extends State<HqPage> {
         print('Erro ao adicionar comentário: $error');
       });
     }
+  }
+}
+
+class CustomLinkWidget extends StatelessWidget {
+  final String? url;
+
+  const CustomLinkWidget({Key? key, this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Link(
+      uri: Uri.parse(url ?? ''),
+      target: LinkTarget.blank,
+      builder: (BuildContext ctx, FollowLink? openLink) {
+        return TextButton.icon(
+          onPressed: openLink,
+          label: const Text('Link para compra: '),
+          icon: const Icon(Icons.read_more),
+          style: TextButton.styleFrom(
+            primary: Colors.blue,
+            textStyle: const TextStyle(
+              fontSize: 17,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
