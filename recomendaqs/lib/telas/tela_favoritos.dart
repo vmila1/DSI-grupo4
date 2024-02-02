@@ -69,7 +69,7 @@ class _FavoritoPageState extends State<FavoritoPage> {
             return Center(
               child: Text(
                 'Sem HQs marcadas como Favoritas',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.black),
               ),
             );
           } else {

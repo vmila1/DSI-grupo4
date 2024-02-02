@@ -474,7 +474,7 @@ class _HqPageState extends State<HqPage> {
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.bottom +
                       AppBar().preferredSize.height +
-                      -50.0,
+                      0.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
