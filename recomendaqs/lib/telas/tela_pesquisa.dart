@@ -377,13 +377,6 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Esta linha remove a seta de voltar
-        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-        title: const Text(''),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: const <Widget>[],
-      ),
       body: Stack(
         children: [
           Image.asset(
@@ -408,7 +401,6 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  // Caixa de texto
                   TextField(
                     controller: pesquisaController,
                     onTap: () {
@@ -430,10 +422,13 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                         _pesquisarHQs(query);
                       }
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
                       hintText: 'Digite aqui...',
+                      prefixIcon: Icon(Icons.search,
+                          color:
+                              Colors.black), // Adicionando o ícone de pesquisa
                     ),
                   ),
                   const SizedBox(height: 10.0),
@@ -510,15 +505,21 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                             ),
                           ),
                           if (historicoVisivel)
-                            InkWell(
-                              onTap: () {
-                                _removerHQDoHistorico(historicoDeBusca[i].id,
-                                    historicoDeBusca[i].title);
+                            IconButton(
+                              onPressed: () {
+                                _removerHQDoHistorico(
+                                  historicoVisivel
+                                      ? historicoDeBusca[i].id
+                                      : resultadosDaBusca[i].id,
+                                  historicoVisivel
+                                      ? historicoDeBusca[i].title
+                                      : resultadosDaBusca[i].title,
+                                );
                               },
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                child: const Icon(Icons.delete,
-                                    color: Colors.white),
+                              icon: Icon(
+                                Icons.delete,
+                                color: Colors
+                                    .red, // Definindo a cor do ícone como vermelho
                               ),
                             ),
                         ],

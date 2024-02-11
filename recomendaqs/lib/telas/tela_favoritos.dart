@@ -215,40 +215,173 @@ class _FavoritoPageState extends State<FavoritoPage> {
           },
         ),
       ),
-      body: FutureBuilder<List<String>>(
-        future: _hqsFavoritasFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Se os dados ainda estão sendo carregados, exiba a tela de carregamento
-            return _buildLoadingScreen();
-          } else if (snapshot.hasError) {
-            // Se ocorrer um erro, você pode exibir uma mensagem de erro aqui
-            return Center(
-              child: Text('Erro ao carregar HQs favoritas.'),
-            );
-          } else if (snapshot.data!.isEmpty) {
-            // Se não houver HQs favoritas, exiba uma mensagem informando isso
-            return Center(
-              child: Text(
-                'Sem HQs marcadas como Favoritas',
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          } else {
-            // Se houver HQs favoritas, exiba a grade de imagens
-            return Stack(
-              children: [
-                Image.asset(
-                  'assets/images/telafundo.png',
-                  fit: BoxFit.cover,
-                  height: double.infinity,
-                  width: double.infinity,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FloatingActionButton(
+          onPressed: _adicionarNovaHQ,
+          child: Icon(Icons.add),
+          backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/telafundo.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Pesquisar HQ',
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.search,
+                      color: Colors.black), // Ícone de lupa preto
                 ),
-                ImagensHQ(hqsFavoritas: snapshot.data!),
-              ],
-            );
-          }
-        },
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Ordenar por:',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                  SizedBox(width: 10),
+                  DropdownButton<OrderBy>(
+                    value: _orderBy,
+                    onChanged: (OrderBy? newValue) {
+                      setState(() {
+                        _orderBy = newValue!;
+                      });
+                    },
+                    dropdownColor: Colors.white,
+                    style: TextStyle(color: Colors.blue),
+                    items: [
+                      DropdownMenuItem(
+                        value: OrderBy.nome,
+                        child: Text(
+                          'Nome',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: OrderBy.precoAsc,
+                        child: Text(
+                          'Preço (Menor para Maior)',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: OrderBy.precoDesc,
+                        child: Text(
+                          'Preço (Maior para Menor)',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _hqsFavoritasFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildLoadingScreen();
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Erro ao carregar HQs favoritas.'),
+                      );
+                    } else if (snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'Sem HQs marcadas como Favoritas',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      );
+                    } else {
+                      List<Map<String, dynamic>> filteredHQs = _filteredHQs(
+                        snapshot.data!,
+                        _searchController.text,
+                      );
+                      // Adicione o return aqui
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: filteredHQs.length,
+                          itemBuilder: (context, index) {
+                            var hqData = filteredHQs[index];
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      hqData['nome'],
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.attach_money,
+                                          color: Colors.green,
+                                        ),
+                                        Text(
+                                          'R\$ ${hqData['preco']}',
+                                          style: TextStyle(color: Colors.green),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HqPage(
+                                        hqDocumentName: hqData['id'],
+                                        imagemHQ: '',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    _removerHQ(hqData['id']);
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  }),
+            ),
+          ],
+        ),
       ),
     );
   }
