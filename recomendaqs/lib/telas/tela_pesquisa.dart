@@ -43,17 +43,22 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
 
       if (user != null) {
         var uid = user.uid;
-        var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+        var userDoc =
+            await FirebaseFirestore.instance.collection('Users').doc(uid).get();
 
         if (userDoc.exists) {
-          var historicoIds = userDoc.get('UserHistorico') as List<dynamic>? ?? [];
+          var historicoIds =
+              userDoc.get('UserHistorico') as List<dynamic>? ?? [];
 
           historicoIds = historicoIds.reversed.toList();
 
           historicoDeBusca.clear();
 
           for (var hqId in historicoIds) {
-            var hqDoc = await FirebaseFirestore.instance.collection('HQs').doc(hqId).get();
+            var hqDoc = await FirebaseFirestore.instance
+                .collection('HQs')
+                .doc(hqId)
+                .get();
 
             if (hqDoc.exists) {
               var hqData = hqDoc.data()!;
@@ -93,7 +98,8 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
 
   Future<void> _carregarGeneros() async {
     try {
-      var querySnapshot = await FirebaseFirestore.instance.collection('HQs').get();
+      var querySnapshot =
+          await FirebaseFirestore.instance.collection('HQs').get();
 
       Set<String> generosSet = <String>{};
 
@@ -114,7 +120,10 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
     try {
       String queryUpperCase = query.toUpperCase();
 
-      var snapshot = await FirebaseFirestore.instance.collection('HQs').where('nomeQuadrinho', isGreaterThanOrEqualTo: queryUpperCase).get();
+      var snapshot = await FirebaseFirestore.instance
+          .collection('HQs')
+          .where('nomeQuadrinho', isGreaterThanOrEqualTo: queryUpperCase)
+          .get();
 
       resultadosDaBusca.clear();
 
@@ -164,16 +173,21 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
       if (user != null) {
         var uid = user.uid;
 
-        var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+        var userDoc =
+            await FirebaseFirestore.instance.collection('Users').doc(uid).get();
 
         if (userDoc.exists) {
-          var historicoIds = userDoc.get('UserHistorico') as List<dynamic>? ?? [];
+          var historicoIds =
+              userDoc.get('UserHistorico') as List<dynamic>? ?? [];
 
           historicoIds.remove(hqId);
 
           historicoIds.add(hqId);
 
-          await FirebaseFirestore.instance.collection('Users').doc(uid).update({'UserHistorico': historicoIds});
+          await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(uid)
+              .update({'UserHistorico': historicoIds});
 
           // Atualiza o histórico após a atualização do usuário
           _carregarHistoricoDeBusca();
@@ -194,14 +208,21 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
         if (user != null) {
           var uid = user.uid;
 
-          var userDoc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+          var userDoc = await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(uid)
+              .get();
 
           if (userDoc.exists) {
-            var historicoIds = userDoc.get('UserHistorico') as List<dynamic>? ?? [];
+            var historicoIds =
+                userDoc.get('UserHistorico') as List<dynamic>? ?? [];
 
             historicoIds.remove(hqId);
 
-            await FirebaseFirestore.instance.collection('Users').doc(uid).update({'UserHistorico': historicoIds});
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .doc(uid)
+                .update({'UserHistorico': historicoIds});
 
             // Atualiza o histórico após a remoção
             _carregarHistoricoDeBusca();
@@ -215,7 +236,10 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
 
   void _pesquisarPorGenero(String genero) async {
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('HQs').where('generoQuadrinho', arrayContains: genero).get();
+      var snapshot = await FirebaseFirestore.instance
+          .collection('HQs')
+          .where('generoQuadrinho', arrayContains: genero)
+          .get();
 
       resultadosDaBusca.clear();
 
@@ -354,6 +378,7 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Esta linha remove a seta de voltar
         backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
         title: const Text(''),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -391,7 +416,8 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                       setState(() {
                         historicoVisivel = false;
                       });
-                      if (pesquisaController.text.isEmpty && generosSelecionados.isNotEmpty) {
+                      if (pesquisaController.text.isEmpty &&
+                          generosSelecionados.isNotEmpty) {
                         // Se a caixa de texto estiver vazia, mas os gêneros foram selecionados, pesquisa automaticamente
                         _pesquisarPorGenero(generosSelecionados.first);
                       }
@@ -428,16 +454,30 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                   const SizedBox(height: 8.0),
 
                   // Resultados da Busca
-                  for (int i = 0; i < 4 && i < (historicoVisivel ? historicoDeBusca.length : resultadosDaBusca.length); i++) ...[
+                  for (int i = 0;
+                      i < 4 &&
+                          i <
+                              (historicoVisivel
+                                  ? historicoDeBusca.length
+                                  : resultadosDaBusca.length);
+                      i++) ...[
                     GestureDetector(
                       onTap: () {
-                        _atualizarHistoricoDoUsuario(historicoVisivel ? historicoDeBusca[i].id : resultadosDaBusca[i].id);
-                        _navegarParaDetalhesHQ(context, historicoVisivel ? historicoDeBusca[i] : resultadosDaBusca[i]);
+                        _atualizarHistoricoDoUsuario(historicoVisivel
+                            ? historicoDeBusca[i].id
+                            : resultadosDaBusca[i].id);
+                        _navegarParaDetalhesHQ(
+                            context,
+                            historicoVisivel
+                                ? historicoDeBusca[i]
+                                : resultadosDaBusca[i]);
                       },
                       child: Row(
                         children: [
                           Image.network(
-                            historicoVisivel ? historicoDeBusca[i].imageUrl : resultadosDaBusca[i].imageUrl,
+                            historicoVisivel
+                                ? historicoDeBusca[i].imageUrl
+                                : resultadosDaBusca[i].imageUrl,
                             height: 100.0,
                           ),
                           const SizedBox(width: 16.0),
@@ -446,14 +486,18 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  historicoVisivel ? historicoDeBusca[i].title : resultadosDaBusca[i].title,
+                                  historicoVisivel
+                                      ? historicoDeBusca[i].title
+                                      : resultadosDaBusca[i].title,
                                   style: const TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
-                                for (String info in historicoVisivel ? historicoDeBusca[i].informacoes : resultadosDaBusca[i].informacoes) ...[
+                                for (String info in historicoVisivel
+                                    ? historicoDeBusca[i].informacoes
+                                    : resultadosDaBusca[i].informacoes) ...[
                                   Text(
                                     info,
                                     style: const TextStyle(
@@ -468,11 +512,13 @@ class _TelaPesquisaState extends State<TelaPesquisa> {
                           if (historicoVisivel)
                             InkWell(
                               onTap: () {
-                                _removerHQDoHistorico(historicoDeBusca[i].id, historicoDeBusca[i].title);
+                                _removerHQDoHistorico(historicoDeBusca[i].id,
+                                    historicoDeBusca[i].title);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(8.0),
-                                child: const Icon(Icons.delete, color: Colors.white),
+                                child: const Icon(Icons.delete,
+                                    color: Colors.white),
                               ),
                             ),
                         ],
