@@ -57,21 +57,21 @@ class _FavoritoPageState extends State<FavoritoPage> {
         future: _hqsFavoritasFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Se os dados ainda estão sendo carregados, exiba a tela de carregamento
             return _buildLoadingScreen();
+
           } else if (snapshot.hasError) {
-            // Se ocorrer um erro, você pode exibir uma mensagem de erro aqui
             return Center(
               child: Text('Erro ao carregar HQs favoritas.'),
             );
-          } else if (snapshot.data!.isEmpty) {
-            // Se não houver HQs favoritas, exiba uma mensagem informando isso
+
+          } else if (snapshot.data == null || snapshot.data!.isEmpty) {
             return Center(
               child: Text(
                 'Sem HQs marcadas como Favoritas',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.black),
               ),
             );
+
           } else {
             // Se houver HQs favoritas, exiba a grade de imagens
             return Stack(
