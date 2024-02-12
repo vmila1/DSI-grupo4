@@ -129,9 +129,10 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final uid = user.uid;
-      
-      final scaffoldMessenger = ScaffoldMessenger.of(context); // Armazena uma referência para o ScaffoldMessenger
-      
+
+      final scaffoldMessenger = ScaffoldMessenger.of(
+          context); // Armazena uma referência para o ScaffoldMessenger
+
       try {
         await FirebaseFirestore.instance.collection('HQs').doc(hqId).delete();
 
@@ -165,7 +166,6 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
     }
   }
 
-
   void _pesquisarHQs(String query) {
     setState(() {
       resultadosDaBusca.clear();
@@ -187,146 +187,161 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
-      title: Text(
-        'Minhas HQs',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18.0,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(86, 83, 255, 1),
+        title: Text(
+          'Minhas HQs',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18.0,
+          ),
         ),
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () {
-          Navigator.pushNamed(context, '/perfil');
-        },
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            _pesquisarHQs(_controllerPesquisa.text);
+            Navigator.pushNamed(context, '/perfil');
           },
         ),
-      ],
-    ),
-    body: Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              _pesquisarHQs(_controllerPesquisa.text);
+            },
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controllerPesquisa,
-              onChanged: _pesquisarHQs, // Chama _pesquisarHQs sempre que o texto mudar
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E1E),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _controllerPesquisa,
+                  onChanged:
+                      _pesquisarHQs, // Chama _pesquisarHQs sempre que o texto mudar
 
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white, // Define a cor de fundo como branca
-                hintText: 'Pesquisar HQs',
-                hintStyle: TextStyle(color: Colors.black), // Define a cor do hintText como preto
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none, // Remove as bordas do TextField
-                  borderRadius: BorderRadius.circular(8.0), // Define a borda do TextField
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor:
+                        Colors.white, // Define a cor de fundo como branca
+                    hintText: 'Pesquisar HQs',
+                    hintStyle: TextStyle(
+                        color: Colors
+                            .black), // Define a cor do hintText como preto
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderSide:
+                          BorderSide.none, // Remove as bordas do TextField
+                      borderRadius: BorderRadius.circular(
+                          8.0), // Define a borda do TextField
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(height: 16),
+                _buildHQList(),
+              ],
             ),
-            SizedBox(height: 16),
-            _buildHQList(),
-          ],
+          ),
         ),
       ),
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () async {
-        final novoHQ = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TelaAddHq(
-                    edicao: false,
-                    atualizarNomeQuadrinho: (String) {},
-                  )),
-        );
-
-        if (novoHQ != null && novoHQ is String) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('HQ adicionada com sucesso! ID: $novoHQ'),
-              duration: Duration(seconds: 2),
-              backgroundColor: Colors.green,
-            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final novoHQ = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TelaAddHq(
+                      edicao: false,
+                      atualizarNomeQuadrinho: (String) {},
+                    )),
           );
-          _carregarHQs();
-        }
-      },
-      child: Icon(Icons.add),
-    ),
-  );
-}
 
+          if (novoHQ != null && novoHQ is String) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('HQ adicionada com sucesso! ID: $novoHQ'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.green,
+              ),
+            );
+            _carregarHQs();
+          }
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
 
   Widget _buildHQList() {
     List<Map<String, dynamic>> listaExibida =
         resultadosDaBusca.isNotEmpty ? resultadosDaBusca : minhasHQs;
 
     if (listaExibida != null && listaExibida.isNotEmpty) {
-      return ListView.builder(
-        shrinkWrap: true, // Adicionado para evitar o erro de tamanho indefinido
-        physics:
-            NeverScrollableScrollPhysics(), // Impede a rolagem dentro da ListView
-        itemCount: listaExibida.length,
-        itemBuilder: (context, index) {
-          final hq = listaExibida[index];
-          final hqId = hq['id'];
+      return Padding(
+        padding: const EdgeInsets.symmetric(
+            vertical: 8.0), // Adiciona espaçamento vertical entre as HQs
+        child: ListView.builder(
+          shrinkWrap:
+              true, // Adicionado para evitar o erro de tamanho indefinido
+          physics:
+              NeverScrollableScrollPhysics(), // Impede a rolagem dentro da ListView
+          itemCount: listaExibida.length,
+          itemBuilder: (context, index) {
+            final hq = listaExibida[index];
+            final hqId = hq['id'];
 
-          return GestureDetector(
-            onTap: () {
-              _navegarParaTelaHQ(hqId);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
+            return GestureDetector(
+              onTap: () {
+                _navegarParaTelaHQ(hqId);
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                    vertical:
+                        8.0), // Adiciona espaçamento vertical entre as HQs
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(8.0),
+                  ),
+                  border: Border.all(
+                    color: Colors.white, // Definindo a cor da borda como branca
+                    width: 1.0,
+                  ),
                 ),
-                border: Border.all(
-                  color: Colors.white, // Definindo a cor da borda como branca
-                  width: 1.0,
+                child: ListTile(
+                  title: Text(
+                    hq['nomeQuadrinho'] ?? 'Nome Indisponível',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          _editarHQ(context, hq);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _exibirConfirmacaoExclusao(hqId);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              child: ListTile(
-                title: Text(
-                  hq['nomeQuadrinho'] ?? 'Nome Indisponível',
-                  style: TextStyle(color: Colors.white),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () {
-                        _editarHQ(context, hq);
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        _exibirConfirmacaoExclusao(hqId);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     } else {
       return Center(

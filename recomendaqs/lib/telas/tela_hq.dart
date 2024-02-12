@@ -480,12 +480,24 @@ class _HqPageState extends State<HqPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: AppBar().preferredSize.height),
-                    Text(
-                      hqData['nomeQuadrinho'] ?? 'Nome não informado',
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Center(
+                      child: Container(
+                        padding: EdgeInsets.all(
+                            10.0), // Espaçamento interno do container
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Colors.black), // Cor e estilo da borda
+                        ),
+                        constraints: BoxConstraints(
+                            maxWidth: 500), // Largura máxima do container
+                        child: Text(
+                          hqData['nomeQuadrinho'] ?? 'Nome não informado',
+                          style: const TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8.0),
