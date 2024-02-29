@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recomendaqs/telas/tela_addhq.dart';
 import 'package:recomendaqs/telas/tela_hq.dart';
-import 'package:recomendaqs/telas/tela_pesquisa.dart';
 
 class TelaGerenciaHq extends StatefulWidget {
   const TelaGerenciaHq({Key? key}) : super(key: key);
@@ -152,7 +151,7 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
         );
 
         // Atualizar a lista de HQs após a exclusão
-        _carregarHQs();
+        _carregarHQs(); // Chama a função para recarregar as HQs
       } catch (e) {
         print('Erro ao excluir HQ: $e');
         scaffoldMessenger.showSnackBar(
@@ -214,43 +213,45 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _controllerPesquisa,
-                  onChanged:
-                      _pesquisarHQs, // Chama _pesquisarHQs sempre que o texto mudar
-
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor:
-                        Colors.white, // Define a cor de fundo como branca
-                    hintText: 'Pesquisar HQs',
-                    hintStyle: TextStyle(
-                        color: Colors
-                            .black), // Define a cor do hintText como preto
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide.none, // Remove as bordas do TextField
-                      borderRadius: BorderRadius.circular(
-                          8.0), // Define a borda do TextField
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                _buildHQList(),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/telafundo.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _controllerPesquisa,
+                    onChanged: _pesquisarHQs,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Pesquisar HQs',
+                      hintStyle: TextStyle(color: Colors.black),
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  _buildHQList(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -283,15 +284,13 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
     List<Map<String, dynamic>> listaExibida =
         resultadosDaBusca.isNotEmpty ? resultadosDaBusca : minhasHQs;
 
+    // ignore: unnecessary_null_comparison
     if (listaExibida != null && listaExibida.isNotEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(
-            vertical: 8.0), // Adiciona espaçamento vertical entre as HQs
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: ListView.builder(
-          shrinkWrap:
-              true, // Adicionado para evitar o erro de tamanho indefinido
-          physics:
-              NeverScrollableScrollPhysics(), // Impede a rolagem dentro da ListView
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           itemCount: listaExibida.length,
           itemBuilder: (context, index) {
             final hq = listaExibida[index];
@@ -302,16 +301,14 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
                 _navegarParaTelaHQ(hqId);
               },
               child: Container(
-                margin: EdgeInsets.symmetric(
-                    vertical:
-                        8.0), // Adiciona espaçamento vertical entre as HQs
+                margin: EdgeInsets.symmetric(vertical: 8.0),
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.all(
                     Radius.circular(8.0),
                   ),
                   border: Border.all(
-                    color: Colors.white, // Definindo a cor da borda como branca
+                    color: Colors.white,
                     width: 1.0,
                   ),
                 ),
@@ -345,9 +342,13 @@ class _TelaGerenciaHqState extends State<TelaGerenciaHq> {
       );
     } else {
       return Center(
-        child: Text(
-          'Nenhuma HQ encontrada.',
-          style: TextStyle(fontSize: 18),
+        child: Container(
+          alignment: Alignment.center,
+          child: Text(
+            'Nenhuma HQ encontrada.',
+            style: TextStyle(fontSize: 24, color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
